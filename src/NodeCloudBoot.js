@@ -4,6 +4,7 @@ import logger from './utils/logger';
 import * as config from './config/config';
 
 import * as brakes from './loadbalance/brakes';
+import * as loadbalance from './loadbalance/loadbalance';
 import configClient from './config/configClient';
 import sequelize from './db/sequelize';
 
@@ -23,6 +24,14 @@ export function getSequelize() {
     return sequelize;
 }
 
+export function getLoadbalance() {
+    return loadbalance;
+}
+
+export function getLogger() {
+    return logger;
+}
+
 export async function init(models, startCallback, stopCallback) {
     await sequelize.init(models);
 
@@ -37,7 +46,7 @@ export async function init(models, startCallback, stopCallback) {
     process.on('SIGINT', function () {
         logger.info("Stopping the service, please wait some times.");
         if (typeof stopCallback === 'function') {
-            stopCallback();
+            stopCallback(config.getConfig('web', {}));
         }
         server.close(() => {
             try {

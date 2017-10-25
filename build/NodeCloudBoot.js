@@ -16,7 +16,7 @@ let init = exports.init = (() => {
         process.on('SIGINT', function () {
             _logger2.default.info("Stopping the service, please wait some times.");
             if (typeof stopCallback === 'function') {
-                stopCallback();
+                stopCallback(config.getConfig('web', {}));
             }
             server.close(() => {
                 try {
@@ -58,6 +58,8 @@ exports.getHttpClient = getHttpClient;
 exports.getConfigClient = getConfigClient;
 exports.getConsul = getConsul;
 exports.getSequelize = getSequelize;
+exports.getLoadbalance = getLoadbalance;
+exports.getLogger = getLogger;
 
 var _http = require('http');
 
@@ -78,6 +80,10 @@ var config = _interopRequireWildcard(_config);
 var _brakes = require('./loadbalance/brakes');
 
 var brakes = _interopRequireWildcard(_brakes);
+
+var _loadbalance = require('./loadbalance/loadbalance');
+
+var loadbalance = _interopRequireWildcard(_loadbalance);
 
 var _configClient = require('./config/configClient');
 
@@ -107,4 +113,12 @@ function getConsul() {
 
 function getSequelize() {
     return _sequelize2.default;
+}
+
+function getLoadbalance() {
+    return loadbalance;
+}
+
+function getLogger() {
+    return _logger2.default;
 }
