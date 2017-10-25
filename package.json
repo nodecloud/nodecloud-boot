@@ -1,0 +1,38 @@
+{
+  "name": "nodecloud-boot",
+  "version": "0.0.1",
+  "description": "",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "babel src -d build",
+    "test": "NODE_ENV=development nyc ava ./test/*.test.js"
+  },
+  "keywords": [
+    "nodecloud",
+    "microservice"
+  ],
+  "author": "miaowing <i@zfeng.net>",
+  "license": "MIT",
+  "dependencies": {
+    "blueimp-md5": "^2.10.0",
+    "consul": "^0.30.0",
+    "koa-configuration": "0.0.1",
+    "koa-consul": "0.0.5",
+    "koa-hystrix": "0.0.2",
+    "loadbalance-client": "0.0.17",
+    "lodash": "^4.17.4",
+    "mysql2": "^1.4.2",
+    "nodecloud-brakes": "^0.1.4",
+    "nodecloud-config-client": "^0.1.1",
+    "sequelize": "^4.17.2",
+    "winston": "^2.4.0",
+    "yamljs": "^0.3.0",
+    "yan-client": "0.0.4"
+  },
+  "devDependencies": {
+    "ava": "^0.19.1",
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.4.0",
+    "nyc": "^10.2.0"
+  }
+}
