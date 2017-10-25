@@ -2,37 +2,22 @@ import http from 'http';
 import consul from './loadbalance/consul';
 import logger from './utils/logger';
 import * as config from './config/config';
-
 import * as brakes from './loadbalance/brakes';
 import * as loadbalance from './loadbalance/loadbalance';
 import configClient from './config/configClient';
 import sequelize from './db/sequelize';
 
-export function getClient() {
-    return brakes;
-}
+module.exports = {
+    config: configClient,
+    client: brakes,
+    loadbalance: loadbalance,
+    consul: consul,
+    sequelize: sequelize,
+    logger: logger,
+    init: init
+};
 
-export function getConfigClient() {
-    return configClient;
-}
-
-export function getConsul() {
-    return consul;
-}
-
-export function getSequelize() {
-    return sequelize;
-}
-
-export function getLoadbalance() {
-    return loadbalance;
-}
-
-export function getLogger() {
-    return logger;
-}
-
-export async function init(models, startCallback, stopCallback) {
+async function init(models, startCallback, stopCallback) {
     await sequelize.init(models);
 
     const server = http.createServer(startCallback(config.getConfig('web', {}))).listen(config.getConfig('web.port', 3000));

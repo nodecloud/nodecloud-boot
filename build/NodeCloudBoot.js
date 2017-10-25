@@ -1,11 +1,6 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.init = undefined;
-
-let init = exports.init = (() => {
+let init = (() => {
     var _ref = _asyncToGenerator(function* (models, startCallback, stopCallback) {
         yield _sequelize2.default.init(models);
 
@@ -54,13 +49,6 @@ let init = exports.init = (() => {
     };
 })();
 
-exports.getClient = getClient;
-exports.getConfigClient = getConfigClient;
-exports.getConsul = getConsul;
-exports.getSequelize = getSequelize;
-exports.getLoadbalance = getLoadbalance;
-exports.getLogger = getLogger;
-
 var _http = require('http');
 
 var _http2 = _interopRequireDefault(_http);
@@ -99,26 +87,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-function getClient() {
-    return brakes;
-}
-
-function getConfigClient() {
-    return _configClient2.default;
-}
-
-function getConsul() {
-    return _consul2.default;
-}
-
-function getSequelize() {
-    return _sequelize2.default;
-}
-
-function getLoadbalance() {
-    return loadbalance;
-}
-
-function getLogger() {
-    return _logger2.default;
-}
+module.exports = {
+    config: _configClient2.default,
+    client: brakes,
+    loadbalance: loadbalance,
+    consul: _consul2.default,
+    sequelize: _sequelize2.default,
+    logger: _logger2.default,
+    init: init
+};

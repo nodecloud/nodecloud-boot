@@ -1,7 +1,5 @@
 import Sequelize from 'sequelize';
-
 import configClient from '../config/configClient';
-
 import logger from '../utils/logger';
 
 export default new class SequelizeClient {
