@@ -3,9 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.start = undefined;
+exports.init = undefined;
 
-let start = exports.start = (() => {
+let init = exports.init = (() => {
     var _ref = _asyncToGenerator(function* (models, startCallback, stopCallback) {
         yield _sequelize2.default.init(models);
 
@@ -49,13 +49,13 @@ let start = exports.start = (() => {
         });
     });
 
-    return function start(_x, _x2, _x3) {
+    return function init(_x, _x2, _x3) {
         return _ref.apply(this, arguments);
     };
 })();
 
-exports.getClient = getClient;
-exports.getConfig = getConfig;
+exports.getHttpClient = getHttpClient;
+exports.getConfigClient = getConfigClient;
 exports.getConsul = getConsul;
 exports.getSequelize = getSequelize;
 
@@ -93,12 +93,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-function getClient(serviceName, healthUrl) {
-    return brakes.getClient(serviceName, healthUrl);
+function getHttpClient() {
+    return brakes;
 }
 
-function getConfig(path, defaultValue) {
-    return _configClient2.default.getConfig(path, defaultValue);
+function getConfigClient() {
+    return _configClient2.default;
 }
 
 function getConsul() {

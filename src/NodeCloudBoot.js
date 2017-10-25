@@ -7,12 +7,12 @@ import * as brakes from './loadbalance/brakes';
 import configClient from './config/configClient';
 import sequelize from './db/sequelize';
 
-export function getClient(serviceName, healthUrl) {
-    return brakes.getClient(serviceName, healthUrl);
+export function getHttpClient() {
+    return brakes;
 }
 
-export function getConfig(path, defaultValue) {
-    return configClient.getConfig(path, defaultValue);
+export function getConfigClient() {
+    return configClient;
 }
 
 export function getConsul() {
@@ -23,7 +23,7 @@ export function getSequelize() {
     return sequelize;
 }
 
-export async function start(models, startCallback, stopCallback) {
+export async function init(models, startCallback, stopCallback) {
     await sequelize.init(models);
 
     const server = http.createServer(startCallback).listen(config.getConfig('web.port', 3000));
