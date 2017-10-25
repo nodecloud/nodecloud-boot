@@ -12,7 +12,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 exports.default = {
     getInstance(configPath) {
-        config.configs.path = configPath;
+        config.setPath(configPath);
         return require('./NodeCloudBoot');
     }
 };

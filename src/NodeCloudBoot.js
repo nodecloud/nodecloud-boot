@@ -8,7 +8,7 @@ import * as loadbalance from './loadbalance/loadbalance';
 import configClient from './config/configClient';
 import sequelize from './db/sequelize';
 
-export function getHttpClient() {
+export function getClient() {
     return brakes;
 }
 
@@ -35,7 +35,7 @@ export function getLogger() {
 export async function init(models, startCallback, stopCallback) {
     await sequelize.init(models);
 
-    const server = http.createServer(startCallback).listen(config.getConfig('web.port', 3000));
+    const server = http.createServer(startCallback(config.getConfig('web', {}))).listen(config.getConfig('web.port', 3000));
     consul.registerService(
         config.getConfig('web.serviceId'),
         config.getConfig('web.serviceName'),
@@ -46,7 +46,7 @@ export async function init(models, startCallback, stopCallback) {
     process.on('SIGINT', function () {
         logger.info("Stopping the service, please wait some times.");
         if (typeof stopCallback === 'function') {
-            stopCallback(config.getConfig('web', {}));
+            stopCallback();
         }
         server.close(() => {
             try {

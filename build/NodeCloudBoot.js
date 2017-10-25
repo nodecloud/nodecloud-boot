@@ -9,14 +9,14 @@ let init = exports.init = (() => {
     var _ref = _asyncToGenerator(function* (models, startCallback, stopCallback) {
         yield _sequelize2.default.init(models);
 
-        const server = _http2.default.createServer(startCallback).listen(config.getConfig('web.port', 3000));
+        const server = _http2.default.createServer(startCallback(config.getConfig('web', {}))).listen(config.getConfig('web.port', 3000));
         _consul2.default.registerService(config.getConfig('web.serviceId'), config.getConfig('web.serviceName'), config.getConfig('web.port'));
 
         //Ctrl + C
         process.on('SIGINT', function () {
             _logger2.default.info("Stopping the service, please wait some times.");
             if (typeof stopCallback === 'function') {
-                stopCallback(config.getConfig('web', {}));
+                stopCallback();
             }
             server.close(() => {
                 try {
@@ -54,7 +54,7 @@ let init = exports.init = (() => {
     };
 })();
 
-exports.getHttpClient = getHttpClient;
+exports.getClient = getClient;
 exports.getConfigClient = getConfigClient;
 exports.getConsul = getConsul;
 exports.getSequelize = getSequelize;
@@ -99,7 +99,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-function getHttpClient() {
+function getClient() {
     return brakes;
 }
 

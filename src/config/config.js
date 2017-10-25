@@ -3,11 +3,13 @@ import path from 'path';
 
 const env = process.env.NODE_ENV;
 
-export const configs = {
-    configPath: __dirname
-};
+let configPath = __dirname;
+
+export function setPath(path) {
+    configPath = path;
+}
 
 export function getConfig(p, defaultValue) {
-    const config = require(path.resolve(configs.configPath, `bootstrap-${env}.js`));
+    const config = require(path.resolve(configPath, `bootstrap-${env}.js`));
     return _.get(config, p, defaultValue);
 }
