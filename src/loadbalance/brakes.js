@@ -7,6 +7,8 @@ import logger from '../utils/logger';
 import Error from '../errors/Error';
 import ExternalError from '../errors/ExternalError';
 
+const cache = {};
+
 const handler = {
     postHandle(err, response) {
         if (err && err.statusCode) {
@@ -61,5 +63,9 @@ export function getClient(serviceName, healthUrl) {
         })
     });
 
-    return brake.circuit(client);
+    if (cache[serviceName]) {
+        return cache[serviceName];
+    }
+
+    return cache[serviceName] = brake.circuit(client);
 }

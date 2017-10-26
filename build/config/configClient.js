@@ -27,8 +27,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 const client = loadbalanceClient.getClient(config.getConfig('config.server.name', 'multi-cloud-config-service'));
-const configClient = new _nodecloudConfigClient2.default({
-    remote: {
+
+const localEnable = config.getConfig('config.local.enable', false);
+const remoteEnable = config.getConfig('config.server.enable', false);
+
+const options = {};
+if (remoteEnable) {
+    options.remote = {
         client: {
             send: (() => {
                 var _ref = _asyncToGenerator(function* (request) {
@@ -44,13 +49,17 @@ const configClient = new _nodecloudConfigClient2.default({
         url: config.getConfig('config.server.url', '/multi-cloud-config-service/v1/config/:service/:env/inner'),
         service: config.getConfig('config.server.client'),
         interval: config.getConfig('config.server.interval', 60000)
-    },
-    local: {
+    };
+}
+if (localEnable) {
+    options.local = {
         path: config.getConfig('config.local.path', __dirname),
         service: config.getConfig('config.local.service', 'application'),
         ext: config.getConfig('config.local.ext', 'js')
-    }
-});
+    };
+}
+
+const configClient = new _nodecloudConfigClient2.default(options);
 
 configClient.on(_nodecloudConfigClient.ERROR_EVENT, err => {
     _logger2.default.error(`Refresh config error.`, err);
