@@ -60,6 +60,10 @@ const handler = {
 };
 
 function getClient(serviceName, healthUrl) {
+    if (cache[serviceName]) {
+        return cache[serviceName];
+    }
+
     const client = loadbalance.getClient(serviceName);
     const brake = new _nodecloudBrakes2.default(serviceName, { handler: handler });
 
@@ -88,10 +92,6 @@ function getClient(serviceName, healthUrl) {
             }
         });
     });
-
-    if (cache[serviceName]) {
-        return cache[serviceName];
-    }
 
     return cache[serviceName] = brake.circuit(client);
 }

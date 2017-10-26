@@ -34,6 +34,10 @@ const handler = {
 };
 
 export function getClient(serviceName, healthUrl) {
+    if (cache[serviceName]) {
+        return cache[serviceName];
+    }
+    
     const client = loadbalance.getClient(serviceName);
     const brake = new BrakeClient(serviceName, {handler: handler});
 
@@ -62,10 +66,6 @@ export function getClient(serviceName, healthUrl) {
             }
         })
     });
-
-    if (cache[serviceName]) {
-        return cache[serviceName];
-    }
 
     return cache[serviceName] = brake.circuit(client);
 }
