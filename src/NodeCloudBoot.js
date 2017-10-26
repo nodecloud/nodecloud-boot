@@ -8,6 +8,7 @@ import configClient from './config/configClient';
 import sequelize from './db/sequelize';
 
 module.exports = {
+    bootstrap: config,
     config: configClient,
     client: brakes,
     loadbalance: loadbalance,

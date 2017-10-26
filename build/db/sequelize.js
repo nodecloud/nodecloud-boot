@@ -58,13 +58,26 @@ exports.default = new class SequelizeClient {
                 throw new Error('Unable to connect to the database:', e);
             }
 
-            if (models.initialModels) {
-                _this.models = models.initialModels(_this.sequelize);
-            }
-            if (models.initModels) {
-                _this.models = models.initModels(_this.sequelize);
+            if (models) {
+                _this.initModels(models);
             }
         })();
+    }
+
+    /**
+     *
+     * @param models               {function|object}
+     * @param models.initModels    {function}
+     * @param models.initialModels {function}
+     */
+    initModels(models) {
+        if (typeof models === 'function') {
+            this.models = models(this.sequelize);
+        } else if (typeof models.initModels === 'function') {
+            this.models = models.initModels(this.sequelize);
+        } else if (typeof models.initialModels === 'function') {
+            this.models = models.initialModels(this.sequelize);
+        }
     }
 
     destroy() {
