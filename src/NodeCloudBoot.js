@@ -14,12 +14,17 @@ module.exports = {
     consul: consul,
     sequelize: sequelize,
     logger: logger,
-    init: init
+    init: init,
+    initApp: initApp
 };
 
-async function init(models, startCallback, stopCallback) {
-    await sequelize.init(models);
+function init(models) {
+    sequelize.init(models);
 
+    return initApp;
+}
+
+function initApp(startCallback, endCallback) {
     const server = http.createServer(startCallback(config.getConfig('web', {}))).listen(config.getConfig('web.port', 3000));
     consul.registerService(
         config.getConfig('web.serviceId'),
@@ -30,9 +35,11 @@ async function init(models, startCallback, stopCallback) {
     //Ctrl + C
     process.on('SIGINT', function () {
         logger.info("Stopping the service, please wait some times.");
-        if (typeof stopCallback === 'function') {
-            stopCallback();
+
+        if (typeof endCallback === 'function') {
+            endCallback();
         }
+        sequelize.destroy();
         server.close(() => {
             try {
                 consul.deregisterService(err => {
@@ -48,9 +55,11 @@ async function init(models, startCallback, stopCallback) {
     //kill -15
     process.on('SIGTERM', function () {
         logger.info("Stopping the service, please wait some times.");
-        if (typeof stopCallback === 'function') {
-            stopCallback();
+        
+        if (typeof endCallback === 'function') {
+            endCallback();
         }
+        sequelize.destroy();
         server.close(() => {
             try {
                 consul.deregisterService(err => {

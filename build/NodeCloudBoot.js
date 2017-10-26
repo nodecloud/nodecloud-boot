@@ -1,54 +1,5 @@
 'use strict';
 
-let init = (() => {
-    var _ref = _asyncToGenerator(function* (models, startCallback, stopCallback) {
-        yield _sequelize2.default.init(models);
-
-        const server = _http2.default.createServer(startCallback(config.getConfig('web', {}))).listen(config.getConfig('web.port', 3000));
-        _consul2.default.registerService(config.getConfig('web.serviceId'), config.getConfig('web.serviceName'), config.getConfig('web.port'));
-
-        //Ctrl + C
-        process.on('SIGINT', function () {
-            _logger2.default.info("Stopping the service, please wait some times.");
-            if (typeof stopCallback === 'function') {
-                stopCallback();
-            }
-            server.close(() => {
-                try {
-                    _consul2.default.deregisterService(err => {
-                        _logger2.default.info("Stopped success");
-                        err ? process.exit(1) : process.exit(0);
-                    });
-                } catch (e) {
-                    process.exit(1);
-                }
-            });
-        });
-
-        //kill -15
-        process.on('SIGTERM', function () {
-            _logger2.default.info("Stopping the service, please wait some times.");
-            if (typeof stopCallback === 'function') {
-                stopCallback();
-            }
-            server.close(() => {
-                try {
-                    _consul2.default.deregisterService(err => {
-                        _logger2.default.info("Stopped success");
-                        err ? process.exit(1) : process.exit(0);
-                    });
-                } catch (e) {
-                    process.exit(1);
-                }
-            });
-        });
-    });
-
-    return function init(_x, _x2, _x3) {
-        return _ref.apply(this, arguments);
-    };
-})();
-
 var _http = require('http');
 
 var _http2 = _interopRequireDefault(_http);
@@ -85,8 +36,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 module.exports = {
     config: _configClient2.default,
     client: brakes,
@@ -94,5 +43,57 @@ module.exports = {
     consul: _consul2.default,
     sequelize: _sequelize2.default,
     logger: _logger2.default,
-    init: init
+    init: init,
+    initApp: initApp
 };
+
+function init(models) {
+    _sequelize2.default.init(models);
+
+    return initApp;
+}
+
+function initApp(startCallback, endCallback) {
+    const server = _http2.default.createServer(startCallback(config.getConfig('web', {}))).listen(config.getConfig('web.port', 3000));
+    _consul2.default.registerService(config.getConfig('web.serviceId'), config.getConfig('web.serviceName'), config.getConfig('web.port'));
+
+    //Ctrl + C
+    process.on('SIGINT', function () {
+        _logger2.default.info("Stopping the service, please wait some times.");
+
+        if (typeof endCallback === 'function') {
+            endCallback();
+        }
+        _sequelize2.default.destroy();
+        server.close(() => {
+            try {
+                _consul2.default.deregisterService(err => {
+                    _logger2.default.info("Stopped success");
+                    err ? process.exit(1) : process.exit(0);
+                });
+            } catch (e) {
+                process.exit(1);
+            }
+        });
+    });
+
+    //kill -15
+    process.on('SIGTERM', function () {
+        _logger2.default.info("Stopping the service, please wait some times.");
+
+        if (typeof endCallback === 'function') {
+            endCallback();
+        }
+        _sequelize2.default.destroy();
+        server.close(() => {
+            try {
+                _consul2.default.deregisterService(err => {
+                    _logger2.default.info("Stopped success");
+                    err ? process.exit(1) : process.exit(0);
+                });
+            } catch (e) {
+                process.exit(1);
+            }
+        });
+    });
+}

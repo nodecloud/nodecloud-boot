@@ -58,7 +58,12 @@ exports.default = new class SequelizeClient {
                 throw new Error('Unable to connect to the database:', e);
             }
 
-            _this.models = models.initialModels(_this.sequelize);
+            if (models.initialModels) {
+                _this.models = models.initialModels(_this.sequelize);
+            }
+            if (models.initModels) {
+                _this.models = models.initModels(_this.sequelize);
+            }
         })();
     }
 
