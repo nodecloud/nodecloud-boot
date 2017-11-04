@@ -1,8 +1,14 @@
+import fs from 'fs';
 import path from 'path';
 import winston from 'winston';
 import * as config from '../config/config';
+import mkdirp from 'mkdirp';
 
 const logPath = config.getConfig('logger.path', __dirname);
+
+if (!fs.existsSync(logPath)) {
+    mkdirp.sync(logPath);
+}
 
 export default new winston.Logger({
     level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',

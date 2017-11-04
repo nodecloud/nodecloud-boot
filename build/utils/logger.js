@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -16,11 +20,19 @@ var _config = require('../config/config');
 
 var config = _interopRequireWildcard(_config);
 
+var _mkdirp = require('mkdirp');
+
+var _mkdirp2 = _interopRequireDefault(_mkdirp);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const logPath = config.getConfig('logger.path', __dirname);
+
+if (!_fs2.default.existsSync(logPath)) {
+    _mkdirp2.default.sync(logPath);
+}
 
 exports.default = new _winston2.default.Logger({
     level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',

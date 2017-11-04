@@ -1,6 +1,6 @@
 {
   "name": "nodecloud-boot",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -21,6 +21,7 @@
     "koa-hystrix": "0.0.2",
     "loadbalance-client": "0.0.17",
     "lodash": "^4.17.4",
+    "mkdirp": "^0.5.1",
     "mysql2": "^1.4.2",
     "nodecloud-brakes": "^0.1.4",
     "nodecloud-config-client": "^0.1.1",
