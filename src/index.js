@@ -1,8 +1,8 @@
-import * as config from './config/config';
+import * as bootstrap from './config/bootstrap';
 
 export default {
     getInstance(configPath) {
-        config.setPath(configPath);
+        bootstrap.setPath(configPath);
         return require('./NodeCloudBoot');
     }
 }

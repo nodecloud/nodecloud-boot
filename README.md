@@ -73,6 +73,7 @@ const logger = ncBoot.logger;
 ```
 
 ## Config file bootstrap-${env}.js
+
 ```javascript
 import path from 'path';
 
@@ -105,6 +106,35 @@ module.exports = {
     },
     logger: {
         path: path.resolve(__dirname, '../log')
+    }
+};
+```
+
+## Config file config-${env}.js
+
+```javascript
+module.exports = {
+    dataSource: {
+        database: 'test',
+        host: '127.0.0.1',
+        username: 'root',
+        password: 'root',
+        pool: {
+            min: 10,
+            max: 100,
+            idle: 20000,
+            acquire: 20000
+        }
+    },
+    loadbalance: {
+        strategy: 'random',
+        request: {
+            forever: true,
+            timeout: 60000
+        }
+    },
+    brake: {
+        timeout: 60000
     }
 };
 ```

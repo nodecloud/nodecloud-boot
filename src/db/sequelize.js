@@ -1,5 +1,5 @@
 import Sequelize from 'sequelize';
-import configClient from '../config/configClient';
+import config from '../config/configClient';
 import logger from '../utils/logger';
 
 export default new class SequelizeClient {
@@ -9,7 +9,7 @@ export default new class SequelizeClient {
     }
 
     async init(models) {
-        const ds = await configClient.getConfig('dataSource');
+        const ds = await config.getConfig('dataSource');
         if (!ds || !ds.config) {
             throw new Error('Cannot load the configuration, please check config-service.');
         }

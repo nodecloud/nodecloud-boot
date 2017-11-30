@@ -1,21 +1,21 @@
 import Consul from 'consul';
 import md5encode from 'blueimp-md5';
-import * as config from '../config/config';
+import * as bootstrap from '../config/bootstrap';
 import logger from '../utils/logger';
 import * as interfaces from '../utils/interfaces';
 
 export default new class ConsulClient {
     constructor() {
-        this.consulHost = config.getConfig('consul.host', 'localhost');
-        this.consulPort = config.getConfig('consul.port', 8500);
-        this.discoveryHost = config.getConfig('consul.discoveryHost', interfaces.getIPAddress());
+        this.consulHost = bootstrap.getConfig('consul.host', 'localhost');
+        this.consulPort = bootstrap.getConfig('consul.port', 8500);
+        this.discoveryHost = bootstrap.getConfig('consul.discoveryHost', interfaces.getIPAddress());
 
-        this.serviceId = config.getConfig('web.serviceId');
-        this.serviceName = config.getConfig('web.serviceName');
-        this.servicePort = config.getConfig('web.port');
+        this.serviceId = bootstrap.getConfig('web.serviceId');
+        this.serviceName = bootstrap.getConfig('web.serviceName');
+        this.servicePort = bootstrap.getConfig('web.port');
 
-        this.timeout = config.getConfig('consul.timeout', '1s');
-        this.interval = config.getConfig('consul.interval', '10s');
+        this.timeout = bootstrap.getConfig('consul.timeout', '1s');
+        this.interval = bootstrap.getConfig('consul.interval', '10s');
 
         this.client = new Consul({host: this.consulHost, port: this.consulPort});
     }

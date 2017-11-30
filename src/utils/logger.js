@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import winston from 'winston';
-import * as config from '../config/config';
+import * as bootstrap from '../config/bootstrap';
 import mkdirp from 'mkdirp';
 
-const logPath = config.getConfig('logger.path', __dirname);
+const logPath = bootstrap.getConfig('logger.path', __dirname);
 
 if (!fs.existsSync(logPath)) {
     mkdirp.sync(logPath);

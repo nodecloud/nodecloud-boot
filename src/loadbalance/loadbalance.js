@@ -18,18 +18,14 @@ export function send(service, request) {
     return getClient(service).send(request);
 }
 
-export function getClient(service) {
+export function getClient(service, defaults) {
     if (!serviceMap[service]) {
-        serviceMap[service] = initLoadbalancer(service);
+        serviceMap[service] = initLoadbalancer(service, defaults);
     }
 
     return serviceMap[service];
 }
 
-function initLoadbalancer(service) {
-    return new LoadbalanceClient(service, consul.client, {
-        request: {
-            forever: true
-        }
-    });
+function initLoadbalancer(service, defaults = {request: {forever: true}}) {
+    return new LoadbalanceClient(service, consul.client, defaults);
 }

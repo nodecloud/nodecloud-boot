@@ -1,15 +1,15 @@
 import http from 'http';
 import consul from './loadbalance/consul';
 import logger from './utils/logger';
-import * as config from './config/config';
+import * as bootstrap from './config/bootstrap';
 import * as brakes from './loadbalance/brakes';
 import * as loadbalance from './loadbalance/loadbalance';
-import configClient from './config/configClient';
+import config from './config/configClient';
 import sequelize from './db/sequelize';
 
 module.exports = {
-    bootstrap: config,
-    config: configClient,
+    bootstrap: bootstrap,
+    config: config,
     client: brakes,
     loadbalance: loadbalance,
     consul: consul,
@@ -26,11 +26,11 @@ function init(models) {
 }
 
 function initApp(startCallback, endCallback) {
-    const server = http.createServer(startCallback(config.getConfig('web', {}))).listen(config.getConfig('web.port', 3000));
+    const server = http.createServer(startCallback(bootstrap.getConfig('web', {}))).listen(bootstrap.getConfig('web.port', 3000));
     consul.registerService(
-        config.getConfig('web.serviceId'),
-        config.getConfig('web.serviceName'),
-        config.getConfig('web.port')
+        bootstrap.getConfig('web.serviceId'),
+        bootstrap.getConfig('web.serviceName'),
+        bootstrap.getConfig('web.port')
     );
 
     //Ctrl + C
@@ -56,7 +56,7 @@ function initApp(startCallback, endCallback) {
     //kill -15
     process.on('SIGTERM', function () {
         logger.info("Stopping the service, please wait some times.");
-        
+
         if (typeof endCallback === 'function') {
             endCallback();
         }

@@ -1,6 +1,6 @@
 {
   "name": "nodecloud-boot",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -28,7 +28,8 @@
     "sequelize": "^4.17.2",
     "winston": "^2.4.0",
     "yamljs": "^0.3.0",
-    "yan-client": "0.0.4"
+    "yan-client": "0.0.4",
+    "yan-error-class": "git+https://github.com/nodecloud/ErrorClass.git"
   },
   "devDependencies": {
     "ava": "^0.19.1",
