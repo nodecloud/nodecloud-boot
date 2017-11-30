@@ -26,7 +26,7 @@ var _logger2 = _interopRequireDefault(_logger);
 
 var _bootstrap = require('../config/bootstrap');
 
-var boostrap = _interopRequireWildcard(_bootstrap);
+var bootstrap = _interopRequireWildcard(_bootstrap);
 
 var _ResponseError = require('../errors/ResponseError');
 
@@ -39,6 +39,17 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const cache = {};
+
+//get brake options
+const brakeOptions = bootstrap.getConfig('brakes', { enable: true, timeout: 60000 });
+if (brakeOptions.enable) {
+    _logger2.default.info('The circuit is enable.');
+} else {
+    _logger2.default.info('The circuit is disable.');
+}
+
+//get loadbalance options
+const lbOptions = bootstrap.getConfig('loadbalance', { request: { forever: true } });
 
 const handler = {
     postHandle(err, response) {
@@ -103,12 +114,6 @@ function getClient(serviceName, healthUrl) {
     if (cache[serviceName]) {
         return cache[serviceName];
     }
-
-    //get brake options
-    const brakeOptions = boostrap.getConfig('brakes', { enable: true, timeout: 60000 });
-
-    // get loadbalance options
-    const lbOptions = boostrap.getConfig('loadbalance', { request: { forever: true } });
 
     // new Loadbalance
     const client = getLbClient(serviceName, lbOptions);

@@ -2,12 +2,23 @@ import _ from 'lodash';
 import * as loadbalance from '../loadbalance/loadbalance';
 import BrakeClient from 'nodecloud-brakes';
 import logger from '../utils/logger';
-import * as boostrap from '../config/bootstrap';
+import * as bootstrap from '../config/bootstrap';
 
 import ResponseError from '../errors/ResponseError';
 import {InternalError} from 'yan-error-class';
 
 const cache = {};
+
+//get brake options
+const brakeOptions = bootstrap.getConfig('brakes', {enable: true, timeout: 60000});
+if (brakeOptions.enable) {
+    logger.info('The circuit is enable.');
+} else {
+    logger.info('The circuit is disable.');
+}
+
+//get loadbalance options
+const lbOptions = bootstrap.getConfig('loadbalance', {request: {forever: true}});
 
 const handler = {
     postHandle(err, response) {
@@ -37,7 +48,8 @@ function getLbClient(serviceName, options) {
     // new Loadbalance
     const client = loadbalance.getClient(serviceName, options);
     client.on('refreshing-services', (services, pool) => {
-        logger.info(`Refreshing the ${serviceName}, the services: ${JSON.stringify(services.map(service => service.Service).map(service => `${service.Address}:${service.Port}`))}`)
+        logger.info(`Refreshing the ${serviceName}, the services: ${JSON.stringify(
+            services.map(service => service.Service).map(service => `${service.Address}:${service.Port}`))}`)
     });
 
     return client;
@@ -72,12 +84,6 @@ export function getClient(serviceName, healthUrl) {
     if (cache[serviceName]) {
         return cache[serviceName];
     }
-    
-    //get brake options
-    const brakeOptions = boostrap.getConfig('brakes', {enable: true, timeout: 60000});
-
-    // get loadbalance options
-    const lbOptions = boostrap.getConfig('loadbalance', {request: {forever: true}});
 
     // new Loadbalance
     const client = getLbClient(serviceName, lbOptions);
