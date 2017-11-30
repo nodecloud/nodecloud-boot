@@ -118,7 +118,7 @@ function getClient(serviceName, healthUrl) {
     // new Loadbalance
     const client = getLbClient(serviceName, lbOptions);
     if (!brakeOptions.enable) {
-        return client;
+        return cache[serviceName] = client;
     }
 
     // new Brake
