@@ -7,6 +7,8 @@ import * as boostrap from '../config/bootstrap';
 import ResponseError from '../errors/ResponseError';
 import {InternalError} from 'yan-error-class';
 
+const cache = {};
+
 const handler = {
     postHandle(err, response) {
         if (err && err.statusCode) {
@@ -67,6 +69,10 @@ function getBrakeClient(serviceName, client, options, healthUrl) {
 }
 
 export function getClient(serviceName, healthUrl) {
+    if (cache[serviceName]) {
+        return cache[serviceName];
+    }
+    
     //get brake options
     const brakeOptions = boostrap.getConfig('brakes', {enable: true, timeout: 60000});
 
@@ -80,5 +86,5 @@ export function getClient(serviceName, healthUrl) {
     }
 
     // new Brake
-    return getBrakeClient(serviceName, client, brakeOptions, healthUrl);
+    return cache[serviceName] = getBrakeClient(serviceName, client, brakeOptions, healthUrl);
 }

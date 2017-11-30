@@ -38,6 +38,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+const cache = {};
+
 const handler = {
     postHandle(err, response) {
         if (err && err.statusCode) {
@@ -98,6 +100,10 @@ function getBrakeClient(serviceName, client, options, healthUrl) {
 }
 
 function getClient(serviceName, healthUrl) {
+    if (cache[serviceName]) {
+        return cache[serviceName];
+    }
+
     //get brake options
     const brakeOptions = boostrap.getConfig('brakes', { enable: true, timeout: 60000 });
 
@@ -111,5 +117,5 @@ function getClient(serviceName, healthUrl) {
     }
 
     // new Brake
-    return getBrakeClient(serviceName, client, brakeOptions, healthUrl);
+    return cache[serviceName] = getBrakeClient(serviceName, client, brakeOptions, healthUrl);
 }
