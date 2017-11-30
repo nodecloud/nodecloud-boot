@@ -8,9 +8,9 @@ var _nodecloudConfigClient = require('nodecloud-config-client');
 
 var _nodecloudConfigClient2 = _interopRequireDefault(_nodecloudConfigClient);
 
-var _config = require('./config');
+var _bootstrap = require('./bootstrap');
 
-var config = _interopRequireWildcard(_config);
+var bootstrap = _interopRequireWildcard(_bootstrap);
 
 var _loadbalance = require('../loadbalance/loadbalance');
 
@@ -26,10 +26,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-const client = loadbalanceClient.getClient(config.getConfig('config.server.name', 'multi-cloud-config-service'));
+const client = loadbalanceClient.getClient(bootstrap.getConfig('config.server.name', 'multi-cloud-config-service'));
 
-const localEnable = config.getConfig('config.local.enable', false);
-const remoteEnable = config.getConfig('config.server.enable', false);
+const localEnable = bootstrap.getConfig('config.local.enable', false);
+const remoteEnable = bootstrap.getConfig('config.server.enable', false);
 
 const options = {};
 if (remoteEnable) {
@@ -46,16 +46,16 @@ if (remoteEnable) {
                 };
             })()
         },
-        url: config.getConfig('config.server.url', '/multi-cloud-config-service/v1/config/:service/:env/inner'),
-        service: config.getConfig('config.server.client'),
-        interval: config.getConfig('config.server.interval', 60000)
+        url: bootstrap.getConfig('config.server.url', '/multi-cloud-config-service/v1/config/:service/:env/inner'),
+        service: bootstrap.getConfig('config.server.client'),
+        interval: bootstrap.getConfig('config.server.interval', 60000)
     };
 }
 if (localEnable) {
     options.local = {
-        path: config.getConfig('config.local.path', __dirname),
-        service: config.getConfig('config.local.service', 'application'),
-        ext: config.getConfig('config.local.ext', 'js')
+        path: bootstrap.getConfig('config.local.path', __dirname),
+        service: bootstrap.getConfig('config.local.service', 'application'),
+        ext: bootstrap.getConfig('config.local.ext', 'js')
     };
 }
 

@@ -16,9 +16,9 @@ var _winston = require('winston');
 
 var _winston2 = _interopRequireDefault(_winston);
 
-var _config = require('../config/config');
+var _bootstrap = require('../config/bootstrap');
 
-var config = _interopRequireWildcard(_config);
+var bootstrap = _interopRequireWildcard(_bootstrap);
 
 var _mkdirp = require('mkdirp');
 
@@ -28,7 +28,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const logPath = config.getConfig('logger.path', __dirname);
+const logPath = bootstrap.getConfig('logger.path', __dirname);
 
 if (!_fs2.default.existsSync(logPath)) {
     _mkdirp2.default.sync(logPath);

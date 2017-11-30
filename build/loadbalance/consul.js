@@ -12,9 +12,9 @@ var _blueimpMd = require('blueimp-md5');
 
 var _blueimpMd2 = _interopRequireDefault(_blueimpMd);
 
-var _config = require('../config/config');
+var _bootstrap = require('../config/bootstrap');
 
-var config = _interopRequireWildcard(_config);
+var bootstrap = _interopRequireWildcard(_bootstrap);
 
 var _logger = require('../utils/logger');
 
@@ -32,16 +32,16 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 exports.default = new class ConsulClient {
     constructor() {
-        this.consulHost = config.getConfig('consul.host', 'localhost');
-        this.consulPort = config.getConfig('consul.port', 8500);
-        this.discoveryHost = config.getConfig('consul.discoveryHost', interfaces.getIPAddress());
+        this.consulHost = bootstrap.getConfig('consul.host', 'localhost');
+        this.consulPort = bootstrap.getConfig('consul.port', 8500);
+        this.discoveryHost = bootstrap.getConfig('consul.discoveryHost', interfaces.getIPAddress());
 
-        this.serviceId = config.getConfig('web.serviceId');
-        this.serviceName = config.getConfig('web.serviceName');
-        this.servicePort = config.getConfig('web.port');
+        this.serviceId = bootstrap.getConfig('web.serviceId');
+        this.serviceName = bootstrap.getConfig('web.serviceName');
+        this.servicePort = bootstrap.getConfig('web.port');
 
-        this.timeout = config.getConfig('consul.timeout', '1s');
-        this.interval = config.getConfig('consul.interval', '10s');
+        this.timeout = bootstrap.getConfig('consul.timeout', '1s');
+        this.interval = bootstrap.getConfig('consul.interval', '10s');
 
         this.client = new _consul2.default({ host: this.consulHost, port: this.consulPort });
     }

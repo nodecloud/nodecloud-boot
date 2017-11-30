@@ -12,9 +12,9 @@ var _logger = require('./utils/logger');
 
 var _logger2 = _interopRequireDefault(_logger);
 
-var _config = require('./config/config');
+var _bootstrap = require('./config/bootstrap');
 
-var config = _interopRequireWildcard(_config);
+var bootstrap = _interopRequireWildcard(_bootstrap);
 
 var _brakes = require('./loadbalance/brakes');
 
@@ -37,7 +37,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = {
-    bootstrap: config,
+    bootstrap: bootstrap,
     config: _configClient2.default,
     client: brakes,
     loadbalance: loadbalance,
@@ -55,8 +55,8 @@ function init(models) {
 }
 
 function initApp(startCallback, endCallback) {
-    const server = _http2.default.createServer(startCallback(config.getConfig('web', {}))).listen(config.getConfig('web.port', 3000));
-    _consul2.default.registerService(config.getConfig('web.serviceId'), config.getConfig('web.serviceName'), config.getConfig('web.port'));
+    const server = _http2.default.createServer(startCallback(bootstrap.getConfig('web', {}))).listen(bootstrap.getConfig('web.port', 3000));
+    _consul2.default.registerService(bootstrap.getConfig('web.serviceId'), bootstrap.getConfig('web.serviceName'), bootstrap.getConfig('web.port'));
 
     //Ctrl + C
     process.on('SIGINT', function () {

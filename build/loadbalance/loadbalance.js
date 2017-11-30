@@ -33,18 +33,14 @@ function send(service, request) {
     return getClient(service).send(request);
 }
 
-function getClient(service) {
+function getClient(service, defaults) {
     if (!serviceMap[service]) {
-        serviceMap[service] = initLoadbalancer(service);
+        serviceMap[service] = initLoadbalancer(service, defaults);
     }
 
     return serviceMap[service];
 }
 
-function initLoadbalancer(service) {
-    return new _loadbalanceClient2.default(service, _consul2.default.client, {
-        request: {
-            forever: true
-        }
-    });
+function initLoadbalancer(service, defaults = { request: { forever: true } }) {
+    return new _loadbalanceClient2.default(service, _consul2.default.client, defaults);
 }
