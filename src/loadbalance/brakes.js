@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as loadbalance from '../loadbalance/loadbalance';
 import BrakeClient from 'nodecloud-brakes';
 import logger from '../utils/logger';
-import config from '../config/configClient';
+import * as boostrap from '../config/bootstrap';
 
 import ResponseError from '../errors/ResponseError';
 import {InternalError} from 'yan-error-class';
@@ -30,12 +30,6 @@ const handler = {
         }
     }
 };
-
-async function loadConfig(path) {
-    const cfg = await config.getConfig(path);
-    logger.info(`Loaded the ${path} configuration from ${cfg.type}`);
-    return _.get(cfg, 'config', {});
-}
 
 function getLbClient(serviceName, options) {
     // new Loadbalance
@@ -72,24 +66,16 @@ function getBrakeClient(serviceName, client, options, healthUrl) {
     return brake.circuit(client);
 }
 
-export async function getClient(serviceName, healthUrl) {
-    let isEnable = true;
-
+export function getClient(serviceName, healthUrl) {
     //get brake options
-    const brakeOptions = await loadConfig('brake');
-    if (brakeOptions.enable) {
-        logger.info(`The ${serviceName}'s circuit is enabled.`);
-        isEnable = true;
-    } else {
-        logger.info(`The ${serviceName}'s circuit is disabled`);
-        isEnable = false;
-    }
+    const brakeOptions = boostrap.getConfig('brakes', {enable: true, timeout: 60000});
 
     // get loadbalance options
-    const lbOptions = await loadConfig('loadbalance');
+    const lbOptions = boostrap.getConfig('loadbalance', {request: {forever: true}});
+
     // new Loadbalance
     const client = getLbClient(serviceName, lbOptions);
-    if (!isEnable) {
+    if (!brakeOptions.enable) {
         return client;
     }
 

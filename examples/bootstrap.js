@@ -29,5 +29,16 @@ module.exports = {
     },
     logger: {
         path: __dirname
+    },
+    loadbalance: {
+        strategy: 'random',
+        request: {
+            forever: true,
+            timeout: 60000
+        }
+    },
+    brake: {
+        enable: true,
+        timeout: 60000
     }
 };

@@ -106,6 +106,17 @@ module.exports = {
     },
     logger: {
         path: path.resolve(__dirname, '../log')
+    },
+    loadbalance: {
+        strategy: 'random',
+        request: {
+            forever: true,
+            timeout: 60000
+        }
+    },
+    brake: {
+        enable: true,
+        timeout: 60000
     }
 };
 ```
@@ -125,17 +136,6 @@ module.exports = {
             idle: 20000,
             acquire: 20000
         }
-    },
-    loadbalance: {
-        strategy: 'random',
-        request: {
-            forever: true,
-            timeout: 60000
-        }
-    },
-    brake: {
-        enable: true,
-        timeout: 60000
     }
 };
 ```

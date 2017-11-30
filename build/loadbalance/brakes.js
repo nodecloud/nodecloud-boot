@@ -3,52 +3,10 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getClient = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-let loadConfig = (() => {
-    var _ref = _asyncToGenerator(function* (path) {
-        const cfg = yield _configClient2.default.getConfig(path);
-        _logger2.default.info(`Loaded the ${path} configuration from ${cfg.type}`);
-        return _lodash2.default.get(cfg, 'config', {});
-    });
-
-    return function loadConfig(_x) {
-        return _ref.apply(this, arguments);
-    };
-})();
-
-let getClient = exports.getClient = (() => {
-    var _ref2 = _asyncToGenerator(function* (serviceName, healthUrl) {
-        let isEnable = true;
-
-        //get brake options
-        const brakeOptions = yield loadConfig('brake');
-        if (brakeOptions.enable) {
-            _logger2.default.info(`The ${serviceName}'s circuit is enabled.`);
-            isEnable = true;
-        } else {
-            _logger2.default.info(`The ${serviceName}'s circuit is disabled`);
-            isEnable = false;
-        }
-
-        // get loadbalance options
-        const lbOptions = yield loadConfig('loadbalance');
-        // new Loadbalance
-        const client = getLbClient(serviceName, lbOptions);
-        if (!isEnable) {
-            return client;
-        }
-
-        // new Brake
-        return getBrakeClient(serviceName, client, brakeOptions, healthUrl);
-    });
-
-    return function getClient(_x2, _x3) {
-        return _ref2.apply(this, arguments);
-    };
-})();
+exports.getClient = getClient;
 
 var _lodash = require('lodash');
 
@@ -66,9 +24,9 @@ var _logger = require('../utils/logger');
 
 var _logger2 = _interopRequireDefault(_logger);
 
-var _configClient = require('../config/configClient');
+var _bootstrap = require('../config/bootstrap');
 
-var _configClient2 = _interopRequireDefault(_configClient);
+var boostrap = _interopRequireWildcard(_bootstrap);
 
 var _ResponseError = require('../errors/ResponseError');
 
@@ -79,8 +37,6 @@ var _yanErrorClass = require('yan-error-class');
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 const handler = {
     postHandle(err, response) {
@@ -139,4 +95,21 @@ function getBrakeClient(serviceName, client, options, healthUrl) {
     });
 
     return brake.circuit(client);
+}
+
+function getClient(serviceName, healthUrl) {
+    //get brake options
+    const brakeOptions = boostrap.getConfig('brakes', { enable: true, timeout: 60000 });
+
+    // get loadbalance options
+    const lbOptions = boostrap.getConfig('loadbalance', { request: { forever: true } });
+
+    // new Loadbalance
+    const client = getLbClient(serviceName, lbOptions);
+    if (!brakeOptions.enable) {
+        return client;
+    }
+
+    // new Brake
+    return getBrakeClient(serviceName, client, brakeOptions, healthUrl);
 }

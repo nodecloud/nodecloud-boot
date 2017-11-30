@@ -10,16 +10,5 @@ module.exports = {
             idle: 20000,
             acquire: 20000
         }
-    },
-    loadbalance: {
-        strategy: 'random',
-        request: {
-            forever: true,
-            timeout: 60000
-        }
-    },
-    brake: {
-        enable: true,
-        timeout: 60000
     }
 };
