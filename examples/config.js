@@ -19,6 +19,7 @@ module.exports = {
         }
     },
     brake: {
+        enable: true,
         timeout: 60000
     }
 };
