@@ -21,12 +21,7 @@ let loadConfig = (() => {
 
 let getClient = exports.getClient = (() => {
     var _ref2 = _asyncToGenerator(function* (serviceName, healthUrl) {
-        if (isEnable && _lodash2.default.get(cache, `${serviceName}.brake`)) {
-            return cache[serviceName].brake;
-        }
-        if (!isEnable && _lodash2.default.get(cache, `${serviceName}.lb`)) {
-            return cache[serviceName].lb;
-        }
+        let isEnable = true;
 
         //get brake options
         const brakeOptions = yield loadConfig('brake');
@@ -43,14 +38,11 @@ let getClient = exports.getClient = (() => {
         // new Loadbalance
         const client = getLbClient(serviceName, lbOptions);
         if (!isEnable) {
-            _lodash2.default.set(cache, `${serviceName}.lb`, client);
             return client;
         }
 
         // new Brake
-        const brakes = getBrakeClient(serviceName, client, brakeOptions, healthUrl);
-        _lodash2.default.set(cache, `${serviceName}.brake`, brakes);
-        return brakes;
+        return getBrakeClient(serviceName, client, brakeOptions, healthUrl);
     });
 
     return function getClient(_x2, _x3) {
@@ -89,9 +81,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-const cache = {};
-let isEnable = true;
 
 const handler = {
     postHandle(err, response) {

@@ -7,9 +7,6 @@ import config from '../config/configClient';
 import ResponseError from '../errors/ResponseError';
 import {InternalError} from 'yan-error-class';
 
-const cache = {};
-let isEnable = true;
-
 const handler = {
     postHandle(err, response) {
         if (err && err.statusCode) {
@@ -76,12 +73,7 @@ function getBrakeClient(serviceName, client, options, healthUrl) {
 }
 
 export async function getClient(serviceName, healthUrl) {
-    if (isEnable && _.get(cache, `${serviceName}.brake`)) {
-        return cache[serviceName].brake;
-    }
-    if (!isEnable && _.get(cache, `${serviceName}.lb`)) {
-        return cache[serviceName].lb;
-    }
+    let isEnable = true;
 
     //get brake options
     const brakeOptions = await loadConfig('brake');
@@ -98,12 +90,9 @@ export async function getClient(serviceName, healthUrl) {
     // new Loadbalance
     const client = getLbClient(serviceName, lbOptions);
     if (!isEnable) {
-        _.set(cache, `${serviceName}.lb`, client);
         return client;
     }
 
     // new Brake
-    const brakes = getBrakeClient(serviceName, client, brakeOptions, healthUrl);
-    _.set(cache, `${serviceName}.brake`, brakes);
-    return brakes;
+    return getBrakeClient(serviceName, client, brakeOptions, healthUrl);
 }
