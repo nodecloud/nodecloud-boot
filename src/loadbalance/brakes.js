@@ -72,21 +72,40 @@ function getBrakeClient(serviceName, client, options, healthUrl) {
     return brake.circuit(client);
 }
 
-export function getBrake(serviceName, options, brakeName) {
-    const brake = new BrakeClient(brakeName || serviceName, {handler: handler, ...options});
+export function getBrake(serviceName, options) {
+    options = options || {};
+    const brake = new BrakeClient(options.brakeName || serviceName, {handler: handler, ...brakeOptions});
     brake.fallback(err => {
         logger.error(`Cannot invoke downstream service ${serviceName}. please try again soon.`, err);
         throw new InternalError(`Cannot invoke downstream service ${serviceName}. please try again soon.`);
     });
     brake.on('circuitOpen', () => {
-        logger.warn(`The service: ${serviceName}'s circuit ${brakeName || ''} is opened.`);
+        logger.warn(`The service: ${serviceName}'s circuit ${options.brakeName || ''} is opened.`);
     });
     brake.on('circuitClosed', () => {
-        logger.info(`The service: ${serviceName}'s circuit ${brakeName || ''}is closed.`);
+        logger.info(`The service: ${serviceName}'s circuit ${options.brakeName || ''}is closed.`);
     });
-    brake.healthCheck(options.healthCheck);
 
-    return brake;
+    const client = getLbClient(serviceName, lbOptions);
+    brake.healthCheck(() => {
+        return client.send({
+            method: 'get',
+            url: options.healthUrl || `/${serviceName}/health`,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    });
+
+    return {
+        circuit(client) {
+            if (brakeOptions.enable) {
+                return brake.circuit(client);
+            }
+
+            return client;
+        }
+    };
 }
 
 export function getClient(serviceName, healthUrl) {
