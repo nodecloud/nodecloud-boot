@@ -6,6 +6,10 @@ Object.defineProperty(exports, "__esModule", {
 exports.send = send;
 exports.getClient = getClient;
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _loadbalanceClient = require('loadbalance-client');
 
 var _loadbalanceClient2 = _interopRequireDefault(_loadbalanceClient);
@@ -28,12 +32,12 @@ const handler = {
     },
     postSend(err, response) {
         if (err && err.statusCode) {
-            _logger2.default.warn(`Invoked the remote api ${_.get(err, 'response.request.href')} fail. response: ${JSON.stringify(_.get(err, 'response.body'))}`);
+            _logger2.default.warn(`Invoked the api ${_lodash2.default.get(err, 'response.request.href')} fail. response: ${JSON.stringify(_lodash2.default.get(err, 'response.body'))}`);
             return err.response || {};
         } else if (err && !err.statusCode) {
             _logger2.default.warn(`Invoked fail, internal error.`, err);
         } else {
-            _logger2.default.info(`Invoked the remote api ${_.get(response, 'request.href')} success. response: ${JSON.stringify(_.get(response, 'body'))}`);
+            _logger2.default.info(`Invoked the api ${_lodash2.default.get(response, 'request.href')} success. response: ${JSON.stringify(_lodash2.default.get(response, 'body'))}`);
         }
     }
 };
@@ -65,5 +69,8 @@ function initLoadbalancer(service, defaults = { request: { forever: true } }) {
     const lbClient = new _loadbalanceClient2.default(service, _consul2.default.client, defaults);
     lbClient.onPreSend(handler.preSend);
     lbClient.onPostSend(handler.postSend);
+    lbClient.on('refreshing-services', (services, pool) => {
+        _logger2.default.debug(`Refreshing the ${serviceName}, the services: ${JSON.stringify(services.map(service => service.Service).map(service => `${service.Address}:${service.Port}`))}`);
+    });
     return lbClient;
 }

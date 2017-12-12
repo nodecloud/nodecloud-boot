@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import LoadbalanceClient from 'loadbalance-client';
 import consul from './consul';
 import logger from '../utils/logger';
@@ -10,12 +11,12 @@ const handler = {
     },
     postSend(err, response) {
         if (err && err.statusCode) {
-            logger.warn(`Invoked the remote api ${_.get(err, 'response.request.href')} fail. response: ${JSON.stringify(_.get(err, 'response.body'))}`);
+            logger.warn(`Invoked the api ${_.get(err, 'response.request.href')} fail. response: ${JSON.stringify(_.get(err, 'response.body'))}`);
             return err.response || {};
         } else if (err && !err.statusCode) {
             logger.warn(`Invoked fail, internal error.`, err);
         } else {
-            logger.info(`Invoked the remote api ${_.get(response, 'request.href')} success. response: ${JSON.stringify(_.get(response, 'body'))}`);
+            logger.info(`Invoked the api ${_.get(response, 'request.href')} success. response: ${JSON.stringify(_.get(response, 'body'))}`);
         }
     }
 };
@@ -47,5 +48,9 @@ function initLoadbalancer(service, defaults = {request: {forever: true}}) {
     const lbClient = new LoadbalanceClient(service, consul.client, defaults);
     lbClient.onPreSend(handler.preSend);
     lbClient.onPostSend(handler.postSend);
+    lbClient.on('refreshing-services', (services, pool) => {
+        logger.debug(`Refreshing the ${serviceName}, the services: ${JSON.stringify(
+            services.map(service => service.Service).map(service => `${service.Address}:${service.Port}`))}`)
+    });
     return lbClient;
 }

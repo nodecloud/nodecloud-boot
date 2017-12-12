@@ -76,12 +76,7 @@ const handler = {
 
 function getLbClient(serviceName, options) {
     // new Loadbalance
-    const client = loadbalance.getClient(serviceName, options);
-    client.on('refreshing-services', (services, pool) => {
-        _logger2.default.info(`Refreshing the ${serviceName}, the services: ${JSON.stringify(services.map(service => service.Service).map(service => `${service.Address}:${service.Port}`))}`);
-    });
-
-    return client;
+    return loadbalance.getClient(serviceName, options);
 }
 
 function getBrakeClient(serviceName, client, options, healthUrl) {
