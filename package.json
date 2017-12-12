@@ -1,6 +1,6 @@
 {
   "name": "nodecloud-boot",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "koa-configuration": "0.0.1",
     "koa-consul": "0.0.5",
     "koa-hystrix": "0.0.2",
-    "loadbalance-client": "0.0.17",
+    "loadbalance-client": "0.1.1",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "mysql2": "^1.4.2",

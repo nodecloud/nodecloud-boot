@@ -1,7 +1,24 @@
 import LoadbalanceClient from 'loadbalance-client';
 import consul from './consul';
+import logger from '../utils/logger';
 
 const serviceMap = {};
+
+const handler = {
+    preSend(request) {
+        logger.info(`Will invoke the api ${JSON.stringify(request)}`);
+    },
+    postSend(err, response) {
+        if (err && err.statusCode) {
+            logger.warn(`Invoked the remote api ${_.get(err, 'response.request.href')} fail. response: ${JSON.stringify(_.get(err, 'response.body'))}`);
+            return err.response || {};
+        } else if (err && !err.statusCode) {
+            logger.warn(`Invoked fail, internal error.`, err);
+        } else {
+            logger.info(`Invoked the remote api ${_.get(response, 'request.href')} success. response: ${JSON.stringify(_.get(response, 'body'))}`);
+        }
+    }
+};
 
 /**
  * Send the http request by loadbalance.
@@ -27,5 +44,8 @@ export function getClient(service, defaults) {
 }
 
 function initLoadbalancer(service, defaults = {request: {forever: true}}) {
-    return new LoadbalanceClient(service, consul.client, defaults);
+    const lbClient = new LoadbalanceClient(service, consul.client, defaults);
+    lbClient.onPreSend(handler.preSend);
+    lbClient.onPostSend(handler.postSend);
+    return lbClient;
 }

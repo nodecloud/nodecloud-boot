@@ -23,13 +23,11 @@ const lbOptions = bootstrap.getConfig('loadbalance', {request: {forever: true}})
 const handler = {
     postHandle(err, response) {
         if (err && err.statusCode) {
-            logger.warn(`Invoke the remote api ${_.get(err, 'response.request.href')} fail.`);
             return err.response || {};
         } else if (err && !err.statusCode) {
             throw err;
         }
 
-        logger.info(`Invoke the remote api ${_.get(response, 'request.href')} success.`);
         return response;
     },
     postCircuit(response) {
@@ -78,6 +76,23 @@ function getBrakeClient(serviceName, client, options, healthUrl) {
     });
 
     return brake.circuit(client);
+}
+
+export function getBrake(serviceName, options, brakeName) {
+    const brake = new BrakeClient(brakeName || serviceName, {handler: handler, ...options});
+    brake.fallback(err => {
+        logger.error(`Cannot invoke downstream service ${serviceName}. please try again soon.`, err);
+        throw new InternalError(`Cannot invoke downstream service ${serviceName}. please try again soon.`);
+    });
+    brake.on('circuitOpen', () => {
+        logger.warn(`The service: ${serviceName}'s circuit ${brakeName || ''} is opened.`);
+    });
+    brake.on('circuitClosed', () => {
+        logger.info(`The service: ${serviceName}'s circuit ${brakeName || ''}is closed.`);
+    });
+    brake.healthCheck(options.healthCheck);
+
+    return brake;
 }
 
 export function getClient(serviceName, healthUrl) {

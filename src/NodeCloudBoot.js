@@ -10,7 +10,7 @@ import sequelize from './db/sequelize';
 module.exports = {
     bootstrap: bootstrap,
     config: config,
-    client: brakes,
+    brakes: brakes,
     loadbalance: loadbalance,
     consul: consul,
     sequelize: sequelize,

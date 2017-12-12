@@ -39,7 +39,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 module.exports = {
     bootstrap: bootstrap,
     config: _configClient2.default,
-    client: brakes,
+    brakes: brakes,
     loadbalance: loadbalance,
     consul: _consul2.default,
     sequelize: _sequelize2.default,

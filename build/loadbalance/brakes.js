@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+exports.getBrake = getBrake;
 exports.getClient = getClient;
 
 var _lodash = require('lodash');
@@ -54,13 +55,11 @@ const lbOptions = bootstrap.getConfig('loadbalance', { request: { forever: true 
 const handler = {
     postHandle(err, response) {
         if (err && err.statusCode) {
-            _logger2.default.warn(`Invoke the remote api ${_lodash2.default.get(err, 'response.request.href')} fail.`);
             return err.response || {};
         } else if (err && !err.statusCode) {
             throw err;
         }
 
-        _logger2.default.info(`Invoke the remote api ${_lodash2.default.get(response, 'request.href')} success.`);
         return response;
     },
     postCircuit(response) {
@@ -108,6 +107,23 @@ function getBrakeClient(serviceName, client, options, healthUrl) {
     });
 
     return brake.circuit(client);
+}
+
+function getBrake(serviceName, options, brakeName) {
+    const brake = new _nodecloudBrakes2.default(brakeName || serviceName, _extends({ handler: handler }, options));
+    brake.fallback(err => {
+        _logger2.default.error(`Cannot invoke downstream service ${serviceName}. please try again soon.`, err);
+        throw new _yanErrorClass.InternalError(`Cannot invoke downstream service ${serviceName}. please try again soon.`);
+    });
+    brake.on('circuitOpen', () => {
+        _logger2.default.warn(`The service: ${serviceName}'s circuit ${brakeName || ''} is opened.`);
+    });
+    brake.on('circuitClosed', () => {
+        _logger2.default.info(`The service: ${serviceName}'s circuit ${brakeName || ''}is closed.`);
+    });
+    brake.healthCheck(options.healthCheck);
+
+    return brake;
 }
 
 function getClient(serviceName, healthUrl) {
