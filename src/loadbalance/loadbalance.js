@@ -49,7 +49,7 @@ function initLoadbalancer(service, defaults = {request: {forever: true}}) {
     lbClient.onPreSend(handler.preSend);
     lbClient.onPostSend(handler.postSend);
     lbClient.on('refreshing-services', (services, pool) => {
-        logger.debug(`Refreshing the ${serviceName}, the services: ${JSON.stringify(
+        logger.debug(`Refreshing the ${service}, the services: ${JSON.stringify(
             services.map(service => service.Service).map(service => `${service.Address}:${service.Port}`))}`)
     });
     return lbClient;
