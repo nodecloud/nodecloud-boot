@@ -94,7 +94,7 @@ function getBrakeClient(serviceName, client, options, healthUrl) {
     brake.healthCheck(() => {
         return client.send({
             method: 'get',
-            url: healthUrl || `/${serviceName}/health`,
+            url: healthUrl || `/health`,
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -122,7 +122,7 @@ function getBrake(serviceName, options) {
     brake.healthCheck(() => {
         return client.send({
             method: 'get',
-            url: options.healthUrl || `/${serviceName}/health`,
+            url: options.healthUrl || `/health`,
             headers: {
                 'Content-Type': 'application/json'
             }
