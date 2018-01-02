@@ -31,14 +31,14 @@ function init(models) {
     return initApp;
 }
 
-async function initNCBoot(models, startCallback, endCallback) {
+async function initNCBoot(models, options) {
     await sequelize.init(models);
 
-    return initApp(startCallback, endCallback);
+    return initApp(options.initCallback, options.afterStop, options.beforeStop);
 }
 
-function initApp(startCallback, endCallback) {
-    const server = http.createServer(startCallback(bootstrap.getConfig('web', {}))).listen(bootstrap.getConfig('web.port', 3000));
+function initApp(initCallback, afterStop, beforeStop) {
+    const server = http.createServer(initCallback(bootstrap.getConfig('web', {}))).listen(bootstrap.getConfig('web.port', 3000));
     consul.registerService(
         bootstrap.getConfig('web.serviceId'),
         bootstrap.getConfig('web.serviceName'),
@@ -49,39 +49,55 @@ function initApp(startCallback, endCallback) {
     process.on('SIGINT', function () {
         logger.info("Stopping the service, please wait some times.");
 
-        if (typeof endCallback === 'function') {
-            endCallback();
-        }
-        sequelize.destroy();
-        server.close(() => {
-            try {
-                consul.deregisterService(err => {
-                    logger.info("Stopped success");
-                    err ? process.exit(1) : process.exit(0)
-                });
-            } catch (e) {
-                process.exit(1)
+        Promise.resolve().then(() => {
+            if (typeof beforeStop === 'function' || (typeof beforeStop === 'object' && beforeStop.then)) {
+                return beforeStop();
             }
-        });
+        }).then(() => {
+            sequelize.destroy();
+            server.close(() => {
+                try {
+                    consul.deregisterService(err => {
+                        logger.info("Stopped success");
+                        err ? process.exit(1) : process.exit(0)
+                    });
+                } catch (e) {
+                    process.exit(1)
+                }
+            });
+        }).finally(() => {
+            if (typeof afterStop === 'function') {
+                afterStop();
+            }
+        })
+
+
     });
 
     //kill -15
     process.on('SIGTERM', function () {
         logger.info("Stopping the service, please wait some times.");
 
-        if (typeof endCallback === 'function') {
-            endCallback();
-        }
-        sequelize.destroy();
-        server.close(() => {
-            try {
-                consul.deregisterService(err => {
-                    logger.info("Stopped success");
-                    err ? process.exit(1) : process.exit(0)
-                });
-            } catch (e) {
-                process.exit(1)
+        Promise.resolve().then(() => {
+            if (typeof beforeStop === 'function' || (typeof beforeStop === 'object' && beforeStop.then)) {
+                return beforeStop();
             }
-        });
+        }).then(() => {
+            sequelize.destroy();
+            server.close(() => {
+                try {
+                    consul.deregisterService(err => {
+                        logger.info("Stopped success");
+                        err ? process.exit(1) : process.exit(0)
+                    });
+                } catch (e) {
+                    process.exit(1)
+                }
+            });
+        }).finally(() => {
+            if (typeof afterStop === 'function') {
+                afterStop();
+            }
+        })
     });
 }

@@ -1,13 +1,13 @@
 'use strict';
 
 let initNCBoot = (() => {
-    var _ref = _asyncToGenerator(function* (models, startCallback, endCallback) {
+    var _ref = _asyncToGenerator(function* (models, options) {
         yield _sequelize2.default.init(models);
 
-        return initApp(startCallback, endCallback);
+        return initApp(options.initCallback, options.afterStop, options.beforeStop);
     });
 
-    return function initNCBoot(_x, _x2, _x3) {
+    return function initNCBoot(_x, _x2) {
         return _ref.apply(this, arguments);
     };
 })();
@@ -74,26 +74,33 @@ function init(models) {
     return initApp;
 }
 
-function initApp(startCallback, endCallback) {
-    const server = _http2.default.createServer(startCallback(bootstrap.getConfig('web', {}))).listen(bootstrap.getConfig('web.port', 3000));
+function initApp(initCallback, afterStop, beforeStop) {
+    const server = _http2.default.createServer(initCallback(bootstrap.getConfig('web', {}))).listen(bootstrap.getConfig('web.port', 3000));
     _consul2.default.registerService(bootstrap.getConfig('web.serviceId'), bootstrap.getConfig('web.serviceName'), bootstrap.getConfig('web.port'));
 
     //Ctrl + C
     process.on('SIGINT', function () {
         _logger2.default.info("Stopping the service, please wait some times.");
 
-        if (typeof endCallback === 'function') {
-            endCallback();
-        }
-        _sequelize2.default.destroy();
-        server.close(() => {
-            try {
-                _consul2.default.deregisterService(err => {
-                    _logger2.default.info("Stopped success");
-                    err ? process.exit(1) : process.exit(0);
-                });
-            } catch (e) {
-                process.exit(1);
+        Promise.resolve().then(() => {
+            if (typeof beforeStop === 'function' || typeof beforeStop === 'object' && beforeStop.then) {
+                return beforeStop();
+            }
+        }).then(() => {
+            _sequelize2.default.destroy();
+            server.close(() => {
+                try {
+                    _consul2.default.deregisterService(err => {
+                        _logger2.default.info("Stopped success");
+                        err ? process.exit(1) : process.exit(0);
+                    });
+                } catch (e) {
+                    process.exit(1);
+                }
+            });
+        }).finally(() => {
+            if (typeof afterStop === 'function') {
+                afterStop();
             }
         });
     });
@@ -102,18 +109,25 @@ function initApp(startCallback, endCallback) {
     process.on('SIGTERM', function () {
         _logger2.default.info("Stopping the service, please wait some times.");
 
-        if (typeof endCallback === 'function') {
-            endCallback();
-        }
-        _sequelize2.default.destroy();
-        server.close(() => {
-            try {
-                _consul2.default.deregisterService(err => {
-                    _logger2.default.info("Stopped success");
-                    err ? process.exit(1) : process.exit(0);
-                });
-            } catch (e) {
-                process.exit(1);
+        Promise.resolve().then(() => {
+            if (typeof beforeStop === 'function' || typeof beforeStop === 'object' && beforeStop.then) {
+                return beforeStop();
+            }
+        }).then(() => {
+            _sequelize2.default.destroy();
+            server.close(() => {
+                try {
+                    _consul2.default.deregisterService(err => {
+                        _logger2.default.info("Stopped success");
+                        err ? process.exit(1) : process.exit(0);
+                    });
+                } catch (e) {
+                    process.exit(1);
+                }
+            });
+        }).finally(() => {
+            if (typeof afterStop === 'function') {
+                afterStop();
             }
         });
     });
