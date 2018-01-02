@@ -1,5 +1,17 @@
 'use strict';
 
+let initNCBoot = (() => {
+    var _ref = _asyncToGenerator(function* (models, startCallback, endCallback) {
+        yield _sequelize2.default.init(models);
+
+        return initApp(startCallback, endCallback);
+    });
+
+    return function initNCBoot(_x, _x2, _x3) {
+        return _ref.apply(this, arguments);
+    };
+})();
+
 var _http = require('http');
 
 var _http2 = _interopRequireDefault(_http);
@@ -36,6 +48,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 module.exports = {
     bootstrap: bootstrap,
     config: _configClient2.default,
@@ -45,9 +59,15 @@ module.exports = {
     sequelize: _sequelize2.default,
     logger: _logger2.default,
     init: init,
-    initApp: initApp
+    initApp: initApp,
+    initNCBoot: initNCBoot
 };
 
+/**
+ * @deprecated
+ * @param models
+ * @return {initApp}
+ */
 function init(models) {
     _sequelize2.default.init(models);
 

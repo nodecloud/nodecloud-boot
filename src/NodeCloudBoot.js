@@ -16,13 +16,25 @@ module.exports = {
     sequelize: sequelize,
     logger: logger,
     init: init,
-    initApp: initApp
+    initApp: initApp,
+    initNCBoot: initNCBoot
 };
 
+/**
+ * @deprecated
+ * @param models
+ * @return {initApp}
+ */
 function init(models) {
     sequelize.init(models);
 
     return initApp;
+}
+
+async function initNCBoot(models, startCallback, endCallback) {
+    await sequelize.init(models);
+
+    return initApp(startCallback, endCallback);
 }
 
 function initApp(startCallback, endCallback) {
