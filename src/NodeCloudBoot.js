@@ -11,6 +11,7 @@ module.exports = {
     bootstrap: bootstrap,
     config: config,
     brakes: brakes,
+    client: brakes,
     loadbalance: loadbalance,
     consul: consul,
     sequelize: sequelize,

@@ -54,6 +54,7 @@ module.exports = {
     bootstrap: bootstrap,
     config: _configClient2.default,
     brakes: brakes,
+    client: brakes,
     loadbalance: loadbalance,
     consul: _consul2.default,
     sequelize: _sequelize2.default,

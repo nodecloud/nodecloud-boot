@@ -16,7 +16,7 @@ const handler = {
         } else if (err && !err.statusCode) {
             logger.warn(`Invoked fail, internal error.`, err);
         } else {
-            logger.info(`Invoked the api ${_.get(response, 'request.href')} success. response: ${JSON.stringify(_.get(response, 'body'))}`);
+            logger.info(`Invoked the api ${_.get(response, 'request.href')} success.`);
         }
     }
 };

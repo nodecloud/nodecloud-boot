@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import * as loadbalance from '../loadbalance/loadbalance';
 import BrakeClient from 'nodecloud-brakes';
 import logger from '../utils/logger';

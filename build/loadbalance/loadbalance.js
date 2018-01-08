@@ -37,7 +37,7 @@ const handler = {
         } else if (err && !err.statusCode) {
             _logger2.default.warn(`Invoked fail, internal error.`, err);
         } else {
-            _logger2.default.info(`Invoked the api ${_lodash2.default.get(response, 'request.href')} success. response: ${JSON.stringify(_lodash2.default.get(response, 'body'))}`);
+            _logger2.default.info(`Invoked the api ${_lodash2.default.get(response, 'request.href')} success.`);
         }
     }
 };
