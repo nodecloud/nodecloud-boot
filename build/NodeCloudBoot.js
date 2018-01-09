@@ -119,17 +119,21 @@ function initApp(initCallback, afterStop, beforeStop) {
             server.close(() => {
                 try {
                     _consul2.default.deregisterService(err => {
+                        if (typeof afterStop === 'function') {
+                            afterStop();
+                        }
+
                         _logger2.default.info("Stopped success");
                         err ? process.exit(1) : process.exit(0);
                     });
                 } catch (e) {
+                    if (typeof afterStop === 'function') {
+                        afterStop();
+                    }
+
                     process.exit(1);
                 }
             });
-        }).finally(() => {
-            if (typeof afterStop === 'function') {
-                afterStop();
-            }
         });
     });
 }

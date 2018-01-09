@@ -88,17 +88,21 @@ function initApp(initCallback, afterStop, beforeStop) {
             server.close(() => {
                 try {
                     consul.deregisterService(err => {
+                        if (typeof afterStop === 'function') {
+                            afterStop();
+                        }
+
                         logger.info("Stopped success");
                         err ? process.exit(1) : process.exit(0)
                     });
                 } catch (e) {
-                    process.exit(1)
+                    if (typeof afterStop === 'function') {
+                        afterStop();
+                    }
+
+                    process.exit(1);
                 }
             });
-        }).finally(() => {
-            if (typeof afterStop === 'function') {
-                afterStop();
-            }
         })
     });
 }
