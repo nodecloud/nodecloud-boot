@@ -24,6 +24,10 @@ var _interfaces = require('../utils/interfaces');
 
 var interfaces = _interopRequireWildcard(_interfaces);
 
+var _sleep = require('../utils/sleep');
+
+var _sleep2 = _interopRequireDefault(_sleep);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -86,16 +90,38 @@ exports.default = new class ConsulClient {
     }
 
     registerService() {
-        const service = this.getService();
-        this.client.agent.service.register(service, function (err) {
-            if (err) {
-                return _logger2.default.error('Register the service error.', err);
+        var _this2 = this;
+
+        return _asyncToGenerator(function* () {
+            const maxRetry = bootstrap.getConfig('consul.retry.max', -1);
+            const retryInterval = bootstrap.getConfig('consul.retry.interval', 5000);
+            const service = _this2.getService();
+
+            let current = 0;
+            while (true) {
+                try {
+                    yield new Promise(function (resolve, reject) {
+                        _this2.client.agent.service.register(service, function (err) {
+                            if (err) {
+                                _logger2.default.error('Register the service error.', err);
+                                return reject(err);
+                            }
+
+                            _logger2.default.info(`Register the service success. service id is ${service.id}.`);
+                            resolve();
+                        });
+                    });
+                    break;
+                } catch (e) {
+                    if (maxRetry !== -1 && ++current > maxRetry) {
+                        break;
+                    }
+                    yield (0, _sleep2.default)(retryInterval);
+                }
             }
 
-            _logger2.default.info(`Register the service success. service id is ${service.id}.`);
-        });
-
-        return service;
+            return service;
+        })();
     }
 
     deregisterService(callback) {

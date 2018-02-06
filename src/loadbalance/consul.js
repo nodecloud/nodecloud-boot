@@ -3,6 +3,7 @@ import md5encode from 'blueimp-md5';
 import * as bootstrap from '../config/bootstrap';
 import logger from '../utils/logger';
 import * as interfaces from '../utils/interfaces';
+import sleep from '../utils/sleep';
 
 export default new class ConsulClient {
     constructor() {
@@ -55,15 +56,33 @@ export default new class ConsulClient {
         });
     }
 
-    registerService() {
+    async registerService() {
+        const maxRetry = bootstrap.getConfig('consul.retry.max', -1);
+        const retryInterval = bootstrap.getConfig('consul.retry.interval', 5000);
         const service = this.getService();
-        this.client.agent.service.register(service, function (err) {
-            if (err) {
-                return logger.error('Register the service error.', err);
-            }
 
-            logger.info(`Register the service success. service id is ${service.id}.`);
-        });
+        let current = 0;
+        while (true) {
+            try {
+                await new Promise((resolve, reject) => {
+                    this.client.agent.service.register(service, function (err) {
+                        if (err) {
+                            logger.error('Register the service error.', err);
+                            return reject(err);
+                        }
+
+                        logger.info(`Register the service success. service id is ${service.id}.`);
+                        resolve();
+                    });
+                });
+                break;
+            } catch (e) {
+                if (maxRetry !== -1 && ++current > maxRetry) {
+                    break;
+                }
+                await sleep(retryInterval);
+            }
+        }
 
         return service;
     }
