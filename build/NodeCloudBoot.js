@@ -40,6 +40,10 @@ var _configClient = require('./config/configClient');
 
 var _configClient2 = _interopRequireDefault(_configClient);
 
+var _consulConfig = require('./config/consulConfig');
+
+var consulConfig = _interopRequireWildcard(_consulConfig);
+
 var _sequelize = require('./db/sequelize');
 
 var _sequelize2 = _interopRequireDefault(_sequelize);
@@ -53,6 +57,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 module.exports = {
     bootstrap: bootstrap,
     config: _configClient2.default,
+    consulConfig: consulConfig,
     brakes: brakes,
     client: brakes,
     loadbalance: loadbalance,

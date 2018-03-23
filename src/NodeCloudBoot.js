@@ -5,11 +5,13 @@ import * as bootstrap from './config/bootstrap';
 import * as brakes from './loadbalance/brakes';
 import * as loadbalance from './loadbalance/loadbalance';
 import config from './config/configClient';
+import * as consulConfig from './config/consulConfig';
 import sequelize from './db/sequelize';
 
 module.exports = {
     bootstrap: bootstrap,
     config: config,
+    consulConfig: consulConfig,
     brakes: brakes,
     client: brakes,
     loadbalance: loadbalance,
