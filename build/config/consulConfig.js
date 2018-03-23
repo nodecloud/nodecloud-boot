@@ -22,7 +22,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const config = new _nodecloudConsulConfig2.default(_consul2.default.client, bootstrap.getConfig('web.serviceName'), { format: 'yaml' });
+const config = new _nodecloudConsulConfig2.default(_consul2.default.client, bootstrap.getConfig('web.serviceName'), process.env.NODE_ENV, { format: 'yaml' });
 
 function get(path, defaults, options) {
     return config.get(path, defaults, options);
