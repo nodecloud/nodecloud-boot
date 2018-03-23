@@ -10,6 +10,7 @@ export default new class ConsulClient {
         this.consulHost = bootstrap.getConfig('consul.host', 'localhost');
         this.consulPort = bootstrap.getConfig('consul.port', 8500);
         this.discoveryHost = bootstrap.getConfig('consul.discoveryHost', interfaces.getIPAddress());
+        this.token = bootstrap.getConfig('consul.token');
 
         this.serviceId = bootstrap.getConfig('web.serviceId');
         this.serviceName = bootstrap.getConfig('web.serviceName');
@@ -33,7 +34,8 @@ export default new class ConsulClient {
                 http: `http://${this.discoveryHost}:${this.servicePort}/health`,
                 interval: this.interval,
                 timeout: this.timeout
-            }
+            },
+            token: this.token
         };
     }
 
@@ -41,13 +43,16 @@ export default new class ConsulClient {
      * Get health service list.
      *
      * @param name
+     * @param options
      * @return {Promise}
      */
-    async getHealthServices(name) {
+    async getHealthServices(name, options = {}) {
         return new Promise((resolve, reject) => {
             this.client.health.service({
+                ...options,
                 service: name,
-                passing: true
+                passing: true,
+                token: this.token,
             }, function (err, result) {
                 if (err) return reject(err);
 
@@ -89,7 +94,7 @@ export default new class ConsulClient {
 
     deregisterService(callback) {
         const service = this.getService();
-        this.client.agent.service.deregister(service.id, function (err) {
+        this.client.agent.service.deregister(service, function (err) {
             if (err) {
                 logger.error('Deregister the service error.', err);
                 callback && callback(err);
@@ -100,7 +105,7 @@ export default new class ConsulClient {
         });
     }
 
-    watch(method, options) {
-        return this.client.watch({method: method, options: options});
+    watch(method, options = {}) {
+        return this.client.watch({method: method, options: {...options, token: this.token}});
     }
 }

@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _consul = require('consul');
 
 var _consul2 = _interopRequireDefault(_consul);
@@ -39,6 +41,7 @@ exports.default = new class ConsulClient {
         this.consulHost = bootstrap.getConfig('consul.host', 'localhost');
         this.consulPort = bootstrap.getConfig('consul.port', 8500);
         this.discoveryHost = bootstrap.getConfig('consul.discoveryHost', interfaces.getIPAddress());
+        this.token = bootstrap.getConfig('consul.token');
 
         this.serviceId = bootstrap.getConfig('web.serviceId');
         this.serviceName = bootstrap.getConfig('web.serviceName');
@@ -62,7 +65,8 @@ exports.default = new class ConsulClient {
                 http: `http://${this.discoveryHost}:${this.servicePort}/health`,
                 interval: this.interval,
                 timeout: this.timeout
-            }
+            },
+            token: this.token
         };
     }
 
@@ -70,17 +74,19 @@ exports.default = new class ConsulClient {
      * Get health service list.
      *
      * @param name
+     * @param options
      * @return {Promise}
      */
-    getHealthServices(name) {
+    getHealthServices(name, options = {}) {
         var _this = this;
 
         return _asyncToGenerator(function* () {
             return new Promise(function (resolve, reject) {
-                _this.client.health.service({
+                _this.client.health.service(_extends({}, options, {
                     service: name,
-                    passing: true
-                }, function (err, result) {
+                    passing: true,
+                    token: _this.token
+                }), function (err, result) {
                     if (err) return reject(err);
 
                     resolve(result);
@@ -126,7 +132,7 @@ exports.default = new class ConsulClient {
 
     deregisterService(callback) {
         const service = this.getService();
-        this.client.agent.service.deregister(service.id, function (err) {
+        this.client.agent.service.deregister(service, function (err) {
             if (err) {
                 _logger2.default.error('Deregister the service error.', err);
                 callback && callback(err);
@@ -137,7 +143,7 @@ exports.default = new class ConsulClient {
         });
     }
 
-    watch(method, options) {
-        return this.client.watch({ method: method, options: options });
+    watch(method, options = {}) {
+        return this.client.watch({ method: method, options: _extends({}, options, { token: this.token }) });
     }
 }();

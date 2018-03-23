@@ -11,7 +11,8 @@ module.exports = {
         port: '',
         discoveryHost: '',
         timeout: '1s',
-        interval: '10s'
+        interval: '10s',
+        token: ''
     },
     config: {
         server: {
