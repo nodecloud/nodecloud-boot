@@ -8,6 +8,10 @@ var _sequelize = require('sequelize');
 
 var _sequelize2 = _interopRequireDefault(_sequelize);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _configClient = require('../config/configClient');
 
 var _configClient2 = _interopRequireDefault(_configClient);
@@ -55,9 +59,9 @@ exports.default = new class SequelizeClient {
                 port: configuration['port'],
                 dialect: 'mysql',
                 pool: {
-                    max: configuration['pool.max'],
-                    min: configuration['pool.min'],
-                    maxIdleTime: configuration['pool.idle']
+                    max: _lodash2.default.get(configuration, 'pool.max', 100),
+                    min: _lodash2.default.get(configuration, 'pool.min', 10),
+                    maxIdleTime: _lodash2.default.get(configuration, 'pool.idle', 60000)
                 },
                 logging: function (message) {
                     _logger2.default.debug('sequelize sql   >>>>>>>>>>>>  ' + message);

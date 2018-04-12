@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import _ from 'lodash';
 import config from '../config/configClient';
 import * as cfg from '../config/consulConfig';
 import logger from '../utils/logger';
@@ -30,9 +31,9 @@ export default new class SequelizeClient {
             port: configuration['port'],
             dialect: 'mysql',
             pool: {
-                max: configuration['pool.max'],
-                min: configuration['pool.min'],
-                maxIdleTime: configuration['pool.idle']
+                max: _.get(configuration, 'pool.max', 100),
+                min: _.get(configuration, 'pool.min', 10),
+                maxIdleTime: _.get(configuration, 'pool.idle', 60000)
             },
             logging: (message) => {
                 logger.debug('sequelize sql   >>>>>>>>>>>>  ' + message);
