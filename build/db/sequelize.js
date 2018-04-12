@@ -12,9 +12,15 @@ var _configClient = require('../config/configClient');
 
 var _configClient2 = _interopRequireDefault(_configClient);
 
+var _consulConfig = require('../config/consulConfig');
+
+var cfg = _interopRequireWildcard(_consulConfig);
+
 var _logger = require('../utils/logger');
 
 var _logger2 = _interopRequireDefault(_logger);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30,21 +36,28 @@ exports.default = new class SequelizeClient {
         var _this = this;
 
         return _asyncToGenerator(function* () {
-            const ds = yield _configClient2.default.getConfig('dataSource');
-            if (!ds || !ds.config) {
-                throw new Error('Cannot load the configuration, please check config-service.');
+            let configuration = {};
+            if (_configClient2.default) {
+                const ds = yield _configClient2.default.getConfig('dataSource');
+                if (!ds || !ds.config) {
+                    throw new Error('Cannot load the configuration, please check config-service.');
+                }
+
+                configuration = ds.config;
+            } else {
+                configuration = yield cfg.get('dataSource');
             }
 
-            _logger2.default.info(`Loaded the database configuration from ${ds.type}`);
+            _logger2.default.info(`Loaded the database configuration.`);
 
-            _this.sequelize = new _sequelize2.default(ds.config['database'], ds.config['username'], ds.config['password'], {
-                host: ds.config['host'],
-                port: ds.config['port'],
+            _this.sequelize = new _sequelize2.default(configuration['database'], configuration['username'], configuration['password'], {
+                host: configuration['host'],
+                port: configuration['port'],
                 dialect: 'mysql',
                 pool: {
-                    max: ds.config['pool.max'],
-                    min: ds.config['pool.min'],
-                    maxIdleTime: ds.config['pool.idle']
+                    max: configuration['pool.max'],
+                    min: configuration['pool.min'],
+                    maxIdleTime: configuration['pool.idle']
                 },
                 logging: function (message) {
                     _logger2.default.debug('sequelize sql   >>>>>>>>>>>>  ' + message);

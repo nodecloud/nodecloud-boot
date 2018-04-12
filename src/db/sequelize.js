@@ -1,5 +1,6 @@
 import Sequelize from 'sequelize';
 import config from '../config/configClient';
+import * as cfg from '../config/consulConfig';
 import logger from '../utils/logger';
 
 export default new class SequelizeClient {
@@ -9,21 +10,29 @@ export default new class SequelizeClient {
     }
 
     async init(models) {
-        const ds = await config.getConfig('dataSource');
-        if (!ds || !ds.config) {
-            throw new Error('Cannot load the configuration, please check config-service.');
+        let configuration = {};
+        if (config) {
+            const ds = await config.getConfig('dataSource');
+            if (!ds || !ds.config) {
+                throw new Error('Cannot load the configuration, please check config-service.');
+            }
+
+            configuration = ds.config;
+        } else {
+            configuration = await cfg.get('dataSource');
         }
 
-        logger.info(`Loaded the database configuration from ${ds.type}`);
 
-        this.sequelize = new Sequelize(ds.config['database'], ds.config['username'], ds.config['password'], {
-            host: ds.config['host'],
-            port: ds.config['port'],
+        logger.info(`Loaded the database configuration.`);
+
+        this.sequelize = new Sequelize(configuration['database'], configuration['username'], configuration['password'], {
+            host: configuration['host'],
+            port: configuration['port'],
             dialect: 'mysql',
             pool: {
-                max: ds.config['pool.max'],
-                min: ds.config['pool.min'],
-                maxIdleTime: ds.config['pool.idle']
+                max: configuration['pool.max'],
+                min: configuration['pool.min'],
+                maxIdleTime: configuration['pool.idle']
             },
             logging: (message) => {
                 logger.debug('sequelize sql   >>>>>>>>>>>>  ' + message);

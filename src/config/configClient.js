@@ -31,7 +31,7 @@ if (localEnable) {
     }
 }
 
-let configClient = {};
+let configClient = null;
 if (remoteEnable || localEnable) {
     configClient = new Client(options);
     configClient.on(ERROR_EVENT, err => {

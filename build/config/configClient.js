@@ -59,7 +59,7 @@ if (localEnable) {
     };
 }
 
-let configClient = {};
+let configClient = null;
 if (remoteEnable || localEnable) {
     configClient = new _nodecloudConfigClient2.default(options);
     configClient.on(_nodecloudConfigClient.ERROR_EVENT, err => {
