@@ -59,10 +59,12 @@ if (localEnable) {
     };
 }
 
-const configClient = new _nodecloudConfigClient2.default(options);
-
-configClient.on(_nodecloudConfigClient.ERROR_EVENT, err => {
-    _logger2.default.error(`Refresh config error.`, err);
-});
+let configClient = {};
+if (remoteEnable || localEnable) {
+    configClient = new _nodecloudConfigClient2.default(options);
+    configClient.on(_nodecloudConfigClient.ERROR_EVENT, err => {
+        _logger2.default.error(`Refresh config error.`, err);
+    });
+}
 
 exports.default = configClient;

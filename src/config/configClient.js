@@ -31,10 +31,12 @@ if (localEnable) {
     }
 }
 
-const configClient = new Client(options);
-
-configClient.on(ERROR_EVENT, err => {
-    logger.error(`Refresh config error.`, err);
-});
+let configClient = {};
+if (remoteEnable || localEnable) {
+    configClient = new Client(options);
+    configClient.on(ERROR_EVENT, err => {
+        logger.error(`Refresh config error.`, err);
+    });
+}
 
 export default configClient;
