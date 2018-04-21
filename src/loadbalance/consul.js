@@ -4,7 +4,7 @@ import * as bootstrap from '../config/bootstrap';
 import logger from '../utils/logger';
 import * as interfaces from '../utils/interfaces';
 import sleep from '../utils/sleep';
-import * as consulConfig from '../config/consulConfig';
+import ConsulConfig from "nodecloud-consul-config";
 
 export default new class ConsulClient {
     constructor() {
@@ -21,6 +21,11 @@ export default new class ConsulClient {
         this.interval = bootstrap.getConfig('consul.interval', '10s');
 
         this.client = new Consul({host: this.consulHost, port: this.consulPort});
+
+        this.config = new ConsulConfig(this.client, bootstrap.getConfig('web.serviceName'), process.env.NODE_ENV, {
+            format: 'yaml',
+            token: bootstrap.getConfig('consul.token')
+        });
     }
 
     getService() {
@@ -110,11 +115,11 @@ export default new class ConsulClient {
         return this.client.watch({method: method, options: {...options, token: this.token}});
     }
 
-    getConfig(...params) {
-        return consulConfig.get(...params);
+    get(path, defaults, options) {
+        return this.config.get(path, defaults, options);
     }
 
-    watchConfig(...params) {
-        return consulConfig.watch(...params);
+    watchConfig(path, defaults, callback, options) {
+        return this.config.watch(path, defaults, callback, options);
     }
 }

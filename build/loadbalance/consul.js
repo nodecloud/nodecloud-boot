@@ -30,9 +30,9 @@ var _sleep = require('../utils/sleep');
 
 var _sleep2 = _interopRequireDefault(_sleep);
 
-var _consulConfig = require('../config/consulConfig');
+var _nodecloudConsulConfig = require('nodecloud-consul-config');
 
-var consulConfig = _interopRequireWildcard(_consulConfig);
+var _nodecloudConsulConfig2 = _interopRequireDefault(_nodecloudConsulConfig);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -55,6 +55,11 @@ exports.default = new class ConsulClient {
         this.interval = bootstrap.getConfig('consul.interval', '10s');
 
         this.client = new _consul2.default({ host: this.consulHost, port: this.consulPort });
+
+        this.config = new _nodecloudConsulConfig2.default(this.client, bootstrap.getConfig('web.serviceName'), process.env.NODE_ENV, {
+            format: 'yaml',
+            token: bootstrap.getConfig('consul.token')
+        });
     }
 
     getService() {
@@ -151,11 +156,11 @@ exports.default = new class ConsulClient {
         return this.client.watch({ method: method, options: _extends({}, options, { token: this.token }) });
     }
 
-    getConfig(...params) {
-        return consulConfig.get(...params);
+    get(path, defaults, options) {
+        return this.config.get(path, defaults, options);
     }
 
-    watchConfig(...params) {
-        return consulConfig.watch(...params);
+    watchConfig(path, defaults, callback, options) {
+        return this.config.watch(path, defaults, callback, options);
     }
 }();
