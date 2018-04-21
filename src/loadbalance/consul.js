@@ -4,6 +4,7 @@ import * as bootstrap from '../config/bootstrap';
 import logger from '../utils/logger';
 import * as interfaces from '../utils/interfaces';
 import sleep from '../utils/sleep';
+import * as consulConfig from '../config/consulConfig';
 
 export default new class ConsulClient {
     constructor() {
@@ -107,5 +108,13 @@ export default new class ConsulClient {
 
     watch(method, options = {}) {
         return this.client.watch({method: method, options: {...options, token: this.token}});
+    }
+
+    getConfig(...params) {
+        return consulConfig.get(...params);
+    }
+
+    watchConfig(...params) {
+        return consulConfig.watch(...params);
     }
 }

@@ -30,6 +30,10 @@ var _sleep = require('../utils/sleep');
 
 var _sleep2 = _interopRequireDefault(_sleep);
 
+var _consulConfig = require('../config/consulConfig');
+
+var consulConfig = _interopRequireWildcard(_consulConfig);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -145,5 +149,13 @@ exports.default = new class ConsulClient {
 
     watch(method, options = {}) {
         return this.client.watch({ method: method, options: _extends({}, options, { token: this.token }) });
+    }
+
+    getConfig(...params) {
+        return consulConfig.get(...params);
+    }
+
+    watchConfig(...params) {
+        return consulConfig.watch(...params);
     }
 }();

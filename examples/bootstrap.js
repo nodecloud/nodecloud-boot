@@ -1,5 +1,3 @@
-import path from 'path';
-
 module.exports = {
     web: {
         serviceId: '',
@@ -14,23 +12,10 @@ module.exports = {
         interval: '10s',
         token: ''
     },
-    config: {
-        server: {
-            name: 'multi-cloud-config-service',
-            url: '/multi-cloud-config-service/v1/config/:service/:env/inner',
-            interval: 60000,
-            watch: false,
-            client: 'multi-cloud-service'
-        },
-        local: {
-            path: path.resolve(__dirname, './log'),
-            service: 'application',
-            ext: 'yml'
-        }
-    },
     logger: {
         path: __dirname
     },
+    tracing: true,
     loadbalance: {
         strategy: 'random',
         request: {
