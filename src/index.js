@@ -5,7 +5,7 @@ export default {
     getInstance(configPath) {
         bootstrap.setPath(configPath);
         if (bootstrap.getConfig('tracing', false)) {
-            tracing.init()
+            tracing()
         }
         return require('./NodeCloudBoot');
     }

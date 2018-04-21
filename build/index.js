@@ -20,7 +20,7 @@ exports.default = {
     getInstance(configPath) {
         bootstrap.setPath(configPath);
         if (bootstrap.getConfig('tracing', false)) {
-            _tracing2.default.init();
+            (0, _tracing2.default)();
         }
         return require('./NodeCloudBoot');
     }
