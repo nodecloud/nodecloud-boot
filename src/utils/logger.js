@@ -25,7 +25,7 @@ export default new winston.Logger({
             name: 'info-file',
             filename: path.resolve(logPath, 'log.log'),
             maxsize: 100 * 1024 * 1024,
-            label: bootstrap.get('web.serviceName'),
+            label: bootstrap.getConfig('web.serviceName'),
             timestamp: () => {
                 return moment(new Date().getTime()).format('YYYY-MM-DD h:mm:ss');
             },
@@ -35,7 +35,7 @@ export default new winston.Logger({
             filename: path.resolve(logPath, 'log-error.log'),
             maxsize: 100 * 1024 * 1024,
             level: 'error',
-            label: bootstrap.get('web.serviceName'),
+            label: bootstrap.getConfig('web.serviceName'),
             timestamp: () => {
                 return moment(new Date().getTime()).format('YYYY-MM-DD h:mm:ss');
             },

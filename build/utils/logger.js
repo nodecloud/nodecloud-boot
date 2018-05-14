@@ -50,7 +50,7 @@ exports.default = new _winston2.default.Logger({
         name: 'info-file',
         filename: _path2.default.resolve(logPath, 'log.log'),
         maxsize: 100 * 1024 * 1024,
-        label: bootstrap.get('web.serviceName'),
+        label: bootstrap.getConfig('web.serviceName'),
         timestamp: () => {
             return (0, _moment2.default)(new Date().getTime()).format('YYYY-MM-DD h:mm:ss');
         }
@@ -59,7 +59,7 @@ exports.default = new _winston2.default.Logger({
         filename: _path2.default.resolve(logPath, 'log-error.log'),
         maxsize: 100 * 1024 * 1024,
         level: 'error',
-        label: bootstrap.get('web.serviceName'),
+        label: bootstrap.getConfig('web.serviceName'),
         timestamp: () => {
             return (0, _moment2.default)(new Date().getTime()).format('YYYY-MM-DD h:mm:ss');
         }
