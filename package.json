@@ -1,6 +1,6 @@
 {
   "name": "nodecloud-boot",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   "dependencies": {
     "@glimpse/glimpse": "^0.22.15",
     "blueimp-md5": "^2.10.0",
-    "consul": "^0.33.1",
+    "consul": "^0.30.0",
     "koa-configuration": "0.0.1",
     "koa-consul": "0.0.5",
     "koa-hystrix": "0.0.2",
