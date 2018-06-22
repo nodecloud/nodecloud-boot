@@ -33,7 +33,13 @@ export default new class SequelizeClient {
             pool: {
                 max: _.get(configuration, 'pool.max', 100),
                 min: _.get(configuration, 'pool.min', 10),
-                maxIdleTime: _.get(configuration, 'pool.idle', 60000)
+                maxIdleTime: _.get(configuration, 'pool.idle', 60000),
+                acquire: _.get(configuration, 'pool.acquire', 20000),
+                handleDisconnects: true,
+                testOnBorrow: true
+            },
+            dialectOptions: {
+                connectTimeout: 10000
             },
             logging: (message) => {
                 logger.debug('sequelize sql   >>>>>>>>>>>>  ' + message);

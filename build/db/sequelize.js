@@ -61,7 +61,13 @@ exports.default = new class SequelizeClient {
                 pool: {
                     max: _lodash2.default.get(configuration, 'pool.max', 100),
                     min: _lodash2.default.get(configuration, 'pool.min', 10),
-                    maxIdleTime: _lodash2.default.get(configuration, 'pool.idle', 60000)
+                    maxIdleTime: _lodash2.default.get(configuration, 'pool.idle', 60000),
+                    acquire: _lodash2.default.get(configuration, 'pool.acquire', 20000),
+                    handleDisconnects: true,
+                    testOnBorrow: true
+                },
+                dialectOptions: {
+                    connectTimeout: 10000
                 },
                 logging: function (message) {
                     _logger2.default.debug('sequelize sql   >>>>>>>>>>>>  ' + message);
