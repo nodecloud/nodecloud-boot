@@ -54,7 +54,7 @@ exports.default = new class ConsulClient {
         this.timeout = bootstrap.getConfig('consul.timeout', '1s');
         this.interval = bootstrap.getConfig('consul.interval', '10s');
 
-        this.client = new _consul2.default({ host: this.consulHost, port: this.consulPort });
+        this.client = new _consul2.default({ host: this.consulHost, port: this.consulPort, defaults: { timeout: 5000 } });
 
         this.config = new _nodecloudConsulConfig2.default(this.client, bootstrap.getConfig('web.serviceName'), process.env.NODE_ENV, {
             format: 'yaml',
