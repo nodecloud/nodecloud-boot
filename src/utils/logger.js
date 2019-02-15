@@ -6,6 +6,7 @@ import * as bootstrap from '../config/bootstrap';
 import mkdirp from 'mkdirp';
 
 const logPath = bootstrap.getConfig('logger.path', __dirname);
+const service = bootstrap.getConfig('web.serviceName', 'default');
 
 if (!fs.existsSync(logPath)) {
     mkdirp.sync(logPath);
@@ -23,7 +24,7 @@ export default new winston.Logger({
         }),
         new winston.transports.File({
             name: 'info-file',
-            filename: path.resolve(logPath, 'log.log'),
+            filename: path.resolve(logPath, `${service}.log`),
             maxsize: 100 * 1024 * 1024,
             label: bootstrap.getConfig('web.serviceName'),
             timestamp: () => {
@@ -32,7 +33,7 @@ export default new winston.Logger({
         }),
         new winston.transports.File({
             name: 'error-file',
-            filename: path.resolve(logPath, 'log-error.log'),
+            filename: path.resolve(logPath, `${service}.error.log`),
             maxsize: 100 * 1024 * 1024,
             level: 'error',
             label: bootstrap.getConfig('web.serviceName'),

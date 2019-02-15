@@ -33,6 +33,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const logPath = bootstrap.getConfig('logger.path', __dirname);
+const service = bootstrap.getConfig('web.serviceName', 'default');
 
 if (!_fs2.default.existsSync(logPath)) {
     _mkdirp2.default.sync(logPath);
@@ -48,7 +49,7 @@ exports.default = new _winston2.default.Logger({
         }
     }), new _winston2.default.transports.File({
         name: 'info-file',
-        filename: _path2.default.resolve(logPath, 'log.log'),
+        filename: _path2.default.resolve(logPath, `${service}.log`),
         maxsize: 100 * 1024 * 1024,
         label: bootstrap.getConfig('web.serviceName'),
         timestamp: () => {
@@ -56,7 +57,7 @@ exports.default = new _winston2.default.Logger({
         }
     }), new _winston2.default.transports.File({
         name: 'error-file',
-        filename: _path2.default.resolve(logPath, 'log-error.log'),
+        filename: _path2.default.resolve(logPath, `${service}.error.log`),
         maxsize: 100 * 1024 * 1024,
         level: 'error',
         label: bootstrap.getConfig('web.serviceName'),
