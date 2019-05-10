@@ -1,6 +1,6 @@
 {
   "name": "nodecloud-boot",
-  "version": "0.8.3",
+  "version": "0.8.5",
   "description": "",
   "main": "build/index.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "mysql2": "^1.5.3",
     "nodecloud-brakes": "^0.1.4",
     "nodecloud-config-client": "^0.1.1",
-    "nodecloud-consul-config": "0.0.4",
+    "nodecloud-consul-config": "0.0.5",
     "sequelize": "^4.38.0",
     "winston": "^2.4.2 ",
     "yamljs": "^0.3.0",

@@ -7,7 +7,7 @@ exports.get = undefined;
 
 let get = exports.get = (() => {
     var _ref = _asyncToGenerator(function* (path, defaults, options) {
-        if (configs[path]) {
+        if (configs && configs[path]) {
             return _lodash2.default.get(configs, path, defaults);
         } else {
             try {
@@ -55,7 +55,9 @@ const config = new _nodecloudConsulConfig2.default(_consul2.default.client, boot
 let configs = {};
 
 config.watch(null, null, (err, data) => {
-    configs = data;
+    if (!err) {
+        configs = data || {};
+    }
 }, { timeout: 300000 });
 config.get().then(data => configs = data);
 

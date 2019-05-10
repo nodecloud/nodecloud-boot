@@ -11,12 +11,14 @@ const config = new ConsulConfig(consul.client, bootstrap.getConfig('web.serviceN
 let configs = {};
 
 config.watch(null, null, (err, data) => {
-    configs = data;
+    if (!err) {
+        configs = data || {};
+    }
 }, {timeout: 300000});
 config.get().then(data => configs = data);
 
 export async function get(path, defaults, options) {
-    if (configs[path]) {
+    if (configs && configs[path]) {
         return _.get(configs, path, defaults);
     } else {
         try {
