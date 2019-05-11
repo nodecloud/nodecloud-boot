@@ -37,8 +37,12 @@ if (remoteEnable) {
         client: {
             send: (() => {
                 var _ref = _asyncToGenerator(function* (request) {
-                    const response = yield client.send(request);
-                    return response.body;
+                    try {
+                        const response = yield client.send(request);
+                        return response.body;
+                    } catch (e) {
+                        return {};
+                    }
                 });
 
                 return function send(_x) {

@@ -14,8 +14,12 @@ if (remoteEnable) {
     options.remote = {
         client: {
             send: async request => {
-                const response = await client.send(request);
-                return response.body;
+                try {
+                    const response = await client.send(request);
+                    return response.body;
+                } catch (e) {
+                    return {};
+                }
             }
         },
         url: bootstrap.getConfig('config.server.url', '/multi-cloud-config-service/v1/config/:service/:env/inner'),
